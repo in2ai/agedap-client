@@ -1,0 +1,12 @@
+<div class="flex flex-col w-full p-4">
+  <p class="text-lg">Comunicar con electron (main nodejs)</p>
+  <p-button (click)="execNode()">Probar comunicación electron</p-button>
+  <p class="text-lg">Load Llama</p>
+  <p-button (click)="execNode('load-llama')">Load Llama</p-button>
+
+  <p class="text-lg">Load Model</p>
+  <form [formGroup]="form">
+    <input pInputText formControlName="model" />
+    <p-button (click)="loadModel()">Load Model</p-button>
+  </form>
+</div>
