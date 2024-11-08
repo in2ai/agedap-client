@@ -1,5 +1,8 @@
-<div *ngIf="!chatLoaded" class="flex flex-col w-full p-4">
+<div *ngIf="!chatLoaded" class="flex flex-col w-full p-4 gap-4">
   <h1 class="text-xl">Cargando chat...</h1>
+  <span *ngIf="errorMessage" class="text-red-500 font-bold text-lg uppercase">{{
+    errorMessage
+  }}</span>
 </div>
 
 <div

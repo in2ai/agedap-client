@@ -1,17 +1,33 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-config',
   templateUrl: './config.component.html',
   styleUrls: [],
 })
-export class ConfigComponent {
+export class ConfigComponent implements OnInit {
   public electronTest?: boolean;
   public llamaLoaded?: boolean;
   public modelLoaded?: boolean | null;
   public modelPath?: string;
   public modelName?: string;
   constructor() {}
+
+  async ngOnInit() {
+    try {
+      const response = await (window as any).electronAPI.runNodeCode({
+        func: 'llm-state',
+      });
+
+      this.electronTest = true;
+      if (response.llama.loaded) this.llamaLoaded = true;
+      if (response.model.loaded) this.modelLoaded = true;
+    } catch (error) {
+      this.electronTest = false;
+      this.llamaLoaded = false;
+      this.modelLoaded = false;
+    }
+  }
 
   async testElectron() {
     try {

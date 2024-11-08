@@ -6,6 +6,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { TranslateService } from '@ngx-translate/core';
 
 type Message = {
   type: 'user' | 'model';
@@ -22,20 +23,36 @@ export class ChatComponent implements OnInit {
   public headerHeight: number =
     document.getElementById('header')?.offsetHeight || 0;
   public chatLoaded: boolean = false;
+  public errorMessage?: string;
   public form!: FormGroup;
   public messages: Message[] = [];
 
   constructor(
     private fb: FormBuilder,
-    private changeDetector: ChangeDetectorRef
+    private changeDetector: ChangeDetectorRef,
+    private translateService: TranslateService
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     this.form = this.fb.group({
       message: [''],
     });
 
-    this.loadChatSession();
+    try {
+      const response = await (window as any).electronAPI.runNodeCode({
+        func: 'llm-state',
+      });
+
+      if (response.llama.loaded && response.model.loaded) {
+        this.loadChatSession();
+      } else {
+        this.errorMessage = this.translateService.instant(
+          'COMMON.MODEL_NOT_LOADED'
+        );
+      }
+    } catch (error) {
+      this.errorMessage = this.translateService.instant('COMMON.ERROR');
+    }
   }
 
   async loadChatSession() {
@@ -45,7 +62,8 @@ export class ChatComponent implements OnInit {
       });
       this.chatLoaded = response.chatSession.loaded;
     } catch (error) {
-      console.error(error);
+      console.log(error);
+      this.errorMessage = this.translateService.instant('COMMON.ERROR');
       this.chatLoaded = false;
     }
   }

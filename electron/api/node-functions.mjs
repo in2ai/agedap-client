@@ -100,6 +100,12 @@ export function handleRunNodeCode() {
           );
         }
         break;
+      case "llm-state":
+        event.sender.send("node-code-response", {
+          func: "llm-state",
+          ...llmState.state,
+        });
+        break;
       default:
         event.sender.send("node-code-response", "Función no encontrada");
     }

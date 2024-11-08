@@ -27,7 +27,7 @@
 
   <div class="flex flex-col gap-2 w-[30rem]">
     <div class="flex flex-row gap-2 items-center justify-between">
-      <p-button (click)="loadLlama()">{{
+      <p-button (click)="loadLlama()" [disabled]="llamaLoaded">{{
         "CONFIG.LOAD_LLAMA" | translate
       }}</p-button>
       <p-tag
