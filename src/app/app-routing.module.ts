@@ -26,6 +26,7 @@ const routes: Routes = [
   imports: [
     RouterModule.forRoot(routes, {
       scrollPositionRestoration: 'top',
+      useHash: true,
     }),
   ],
   exports: [RouterModule],

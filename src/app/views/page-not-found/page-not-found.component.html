@@ -6,11 +6,10 @@
     <p class="text-center text-gray-800">
       {{ "404.MESSAGE" | translate }}
     </p>
-    <a
+    <p-button
       routerLink="/dashboard"
-      class="mt-4 px-4 py-2 text-white bg-blue-500 rounded-md shadow-md hover:bg-blue-600 transition-colors"
-    >
-      {{ "404.BACK" | translate }}
-    </a>
+      class="mt-4"
+      label="{{ '404.BACK' | translate }}"
+    ></p-button>
   </div>
 </article>

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { PrimeNGConfig } from 'primeng/api';
 
@@ -8,12 +8,13 @@ import { PrimeNGConfig } from 'primeng/api';
   styleUrls: [],
 })
 export class LayoutComponent implements OnInit {
+  @ViewChild('sidebar') sidebar: any;
+
   constructor(
     private primeNGConfig: PrimeNGConfig,
     private translateService: TranslateService
   ) {}
 
-  public sidebarVisible: boolean = false;
   ngOnInit() {
     const primeNgTranslation = this.translateService.instant('PRIMENG');
     this.primeNGConfig.ripple = true;
@@ -28,5 +29,9 @@ export class LayoutComponent implements OnInit {
       overlayMenu: 1600,
       tooltip: 1700,
     };
+  }
+
+  onToggleSidebar() {
+    this.sidebar.toggleSidebar();
   }
 }

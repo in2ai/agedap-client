@@ -1,4 +1,10 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  OnDestroy,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { APP_ROUTES, MainRouteInfo } from '../sidebar/sidebar.routes';
@@ -10,6 +16,7 @@ import { TranslateService } from '@ngx-translate/core';
   styleUrls: [],
 })
 export class HeaderComponent implements OnInit, OnDestroy {
+  @Output() toggleSidebar: EventEmitter<void> = new EventEmitter<void>();
   public title: string = '';
 
   private sidebarRoutes: MainRouteInfo[] = APP_ROUTES;
@@ -60,5 +67,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscriptions.forEach((s) => s.unsubscribe());
+  }
+
+  toggleSidebarButton() {
+    if (this.toggleSidebar) {
+      this.toggleSidebar.emit();
+    }
   }
 }

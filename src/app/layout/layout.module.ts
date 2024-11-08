@@ -10,6 +10,7 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { HeaderComponent } from './header/header.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { TabMenuModule } from 'primeng/tabmenu';
+import { SidebarModule } from 'primeng/sidebar';
 
 @NgModule({
   declarations: [LayoutComponent, HeaderComponent, SidebarComponent],
@@ -22,6 +23,7 @@ import { TabMenuModule } from 'primeng/tabmenu';
     StyleClassModule,
     TranslateModule,
     TabMenuModule,
+    SidebarModule,
   ],
   providers: [DatePipe],
   exports: [LayoutComponent],

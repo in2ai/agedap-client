@@ -1,4 +1,10 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
 type Message = {
@@ -12,6 +18,9 @@ type Message = {
   styleUrls: [],
 })
 export class ChatComponent implements OnInit {
+  @ViewChild('chat') chat!: ElementRef;
+  public headerHeight: number =
+    document.getElementById('header')?.offsetHeight || 0;
   public chatLoaded: boolean = false;
   public form!: FormGroup;
   public messages: Message[] = [];
@@ -26,39 +35,38 @@ export class ChatComponent implements OnInit {
       message: [''],
     });
 
-    this.execNode('create-chat-session');
-    (window as any).electronAPI.onNodeCodeResponse(
-      (event: any, response: any) => {
-        switch (response.func) {
-          case 'create-chat-session':
-            console.log(response);
-            alert('created chat session: ' + response.chatSession.loaded);
-
-            this.chatLoaded = response.chatSession.loaded;
-            this.changeDetector.detectChanges();
-            break;
-          case 'send-message':
-            this.messages = response.chatSession.simplifiedChat;
-            this.changeDetector.detectChanges();
-            break;
-          default:
-            break;
-        }
-      }
-    );
+    this.loadChatSession();
   }
 
-  execNode(func: string = 'test') {
-    (window as any).electronAPI.runNodeCode({ func: func });
+  async loadChatSession() {
+    try {
+      const response = await (window as any).electronAPI.runNodeCode({
+        func: 'create-chat-session',
+      });
+      this.chatLoaded = response.chatSession.loaded;
+    } catch (error) {
+      console.error(error);
+      this.chatLoaded = false;
+    }
   }
 
-  sendMessage() {
+  async sendMessage() {
     const message = this.form.get('message')?.value;
-    console.log('message: ', message);
-    (window as any).electronAPI.runNodeCode({
-      func: 'send-message',
-      message: message,
-    });
     this.form.get('message')?.setValue('');
+    if (!message) return;
+    this.messages.push({ type: 'user', message });
+    this.chat.nativeElement.scrollTop = this.chat.nativeElement.scrollHeight;
+
+    try {
+      const response = await (window as any).electronAPI.runNodeCode({
+        func: 'send-message',
+        message: message,
+      });
+      this.messages = response.chatSession.simplifiedChat;
+      this.changeDetector.detectChanges();
+      this.chat.nativeElement.scrollTop = this.chat.nativeElement.scrollHeight;
+    } catch (error) {
+      console.log(error);
+    }
   }
 }

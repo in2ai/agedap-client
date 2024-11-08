@@ -11,6 +11,7 @@ import { environment } from 'src/environments/environment';
 export class SidebarComponent {
   constructor(private router: Router) {}
 
+  public sidebarVisible: boolean = false;
   public mainRoutes: MainRouteInfo[] = APP_ROUTES;
   public appName: string = environment.appName;
 
@@ -31,5 +32,9 @@ export class SidebarComponent {
     }
 
     return this.router.url.startsWith(checkFullPath);
+  }
+
+  toggleSidebar() {
+    this.sidebarVisible = !this.sidebarVisible;
   }
 }

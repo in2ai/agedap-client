@@ -1,34 +1,55 @@
 <div *ngIf="!chatLoaded" class="flex flex-col w-full p-4">
-  <p>Loading chat...</p>
+  <h1 class="text-xl">Cargando chat...</h1>
 </div>
 
-<div *ngIf="chatLoaded" class="flex flex-col w-full p-4">
-  <div class="flex flex-col w-full h-96 overflow-y-auto">
-    <div *ngFor="let message of messages" class="flex flex-row w-full p-2">
+<div
+  *ngIf="chatLoaded"
+  class="flex flex-col w-full p-4 gap-2"
+  [style.height]="'calc(100vh - ' + (headerHeight + 20) + 'px)'"
+>
+  <div #chat class="flex flex-col w-full h-full overflow-y-auto">
+    <div
+      *ngFor="let message of messages"
+      [ngClass]="{
+        'justify-end': message.type === 'user',
+        'justify-start': message.type === 'model'
+      }"
+      class="flex w-full mb-2"
+    >
       <div
-        class="flex flex-col p-2 border border-gray-300 rounded"
+        class="max-w-xs p-3 border rounded-lg"
         [ngClass]="{
-          'bg-gray-200': message.type === 'model',
-          'bg-blue-200': message.type === 'user'
+          'bg-green-500 text-white': message.type === 'user',
+          'bg-gray-300 text-black': message.type === 'model',
+          'rounded-br-none': message.type === 'user',
+          'rounded-bl-none': message.type === 'model'
         }"
       >
-        <p>{{ message.message }}</p>
-        <small>{{ message.type }}</small>
+        <span class="text-sm block">{{ message.message }}</span>
+        <small class="text-xs block mt-1 italic text-right opacity-75">{{
+          message.type
+        }}</small>
       </div>
     </div>
   </div>
   <form
-    class="flex flex-row w-full"
+    class="flex w-full gap-2 items-center mt-2"
     [formGroup]="form"
     (ngSubmit)="sendMessage()"
   >
     <input
       pInputText
-      class="flex-1 p-2 border border-gray-300 rounded"
+      class="flex-1 p-2 border border-gray-300 focus:outline-none focus:ring focus:ring-blue-300"
       type="text"
-      placeholder="Type a message..."
+      placeholder="Escribe un mensaje..."
       formControlName="message"
     />
-    <button pButton type="submit">Send</button>
+    <p-button
+      type="submit"
+      label="Enviar"
+      class="p-button-primary rounded-full"
+      icon="pi pi-send"
+      size="small"
+    ></p-button>
   </form>
 </div>

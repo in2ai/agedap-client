@@ -1,0 +1,88 @@
+<div class="flex flex-col w-full p-4 gap-4">
+  <div class="flex flex-col gap-2 w-[30rem]">
+    <div class="flex flex-row gap-2 items-center justify-between">
+      <p-button (click)="testElectron()">{{
+        "CONFIG.ELECTRON_TEST" | translate
+      }}</p-button>
+      <p-tag
+        *ngIf="electronTest === undefined"
+        [value]="'COMMON.NONE' | translate"
+        class="uppercase"
+        severity="contrast"
+      ></p-tag>
+      <p-tag
+        *ngIf="electronTest === true"
+        [value]="'COMMON.OK' | translate"
+        class="uppercase"
+        severity="success"
+      ></p-tag>
+      <p-tag
+        *ngIf="electronTest === false"
+        [value]="'COMMON.ERROR' | translate"
+        class="uppercase"
+        severity="danger"
+      ></p-tag>
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-2 w-[30rem]">
+    <div class="flex flex-row gap-2 items-center justify-between">
+      <p-button (click)="loadLlama()">{{
+        "CONFIG.LOAD_LLAMA" | translate
+      }}</p-button>
+      <p-tag
+        *ngIf="llamaLoaded === undefined"
+        [value]="'COMMON.NONE' | translate"
+        class="uppercase"
+        severity="contrast"
+      ></p-tag>
+      <p-tag
+        *ngIf="llamaLoaded === true"
+        [value]="'COMMON.OK' | translate"
+        class="uppercase"
+        severity="success"
+      ></p-tag>
+      <p-tag
+        *ngIf="llamaLoaded === false"
+        [value]="'COMMON.ERROR' | translate"
+        class="uppercase"
+        severity="danger"
+      ></p-tag>
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-2 w-[30rem]">
+    <div class="flex flex-row gap-2 items-center justify-between">
+      <p-button
+        (click)="loadModel()"
+        icon="pi pi-file-arrow-up"
+        [label]="modelName ? modelName : ('CONFIG.LOAD_MODEL' | translate)"
+        [disabled]="llamaLoaded === undefined ? true : llamaLoaded === false"
+      />
+      <p-tag
+        *ngIf="modelLoaded === undefined"
+        [value]="'COMMON.NONE' | translate"
+        class="uppercase"
+        severity="contrast"
+      ></p-tag>
+      <p-tag
+        *ngIf="modelLoaded === null"
+        [value]="'COMMON.LOADING' | translate"
+        class="uppercase"
+        severity="info"
+      ></p-tag>
+      <p-tag
+        *ngIf="modelLoaded === true"
+        [value]="'COMMON.OK' | translate"
+        class="uppercase"
+        severity="success"
+      ></p-tag>
+      <p-tag
+        *ngIf="modelLoaded === false"
+        [value]="'COMMON.ERROR' | translate"
+        class="uppercase"
+        severity="danger"
+      ></p-tag>
+    </div>
+  </div>
+</div>

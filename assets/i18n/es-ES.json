@@ -153,8 +153,15 @@
   "DASHBOARD": {
     "TITLE": "Páginas"
   },
-  "TEST": {
-    "TITLE": "Test Page"
+  "CONFIG": {
+    "TITLE": "Llama",
+    "ELECTRON_TEST": "Comunicación con Electron",
+    "LOAD_LLAMA": "Cargar Llama",
+    "LOAD_MODEL_LABEL": "Ruta del modelo",
+    "LOAD_MODEL": "Cargar módelo"
+  },
+  "CHAT": {
+    "TITLE": "Chat"
   },
   "404": {
     "TITLE": "404 - Página no encontrada",
@@ -175,6 +182,9 @@
     "CANCELLED": "Cancelado",
     "YES": "Sí",
     "NO": "No",
-    "CURRENT_PAGE": "Página {currentPage} de {totalPages}"
+    "CURRENT_PAGE": "Página {currentPage} de {totalPages}",
+    "OK": "Ok",
+    "NONE": "None",
+    "LOADING": "Cargando"
   }
 }

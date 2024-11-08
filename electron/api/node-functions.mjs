@@ -1,5 +1,6 @@
 import { ipcMain } from "electron";
 import { llmFunctions, llmState } from "./llama.mjs";
+import { dialog } from "electron";
 
 export function handleRunNodeCode() {
   ipcMain.on("run-node-code", async (event, data) => {
@@ -12,6 +13,21 @@ export function handleRunNodeCode() {
           message: "Función test ejecutada",
         });
         break;
+      case "select-model":
+        const dialogResult = await dialog.showOpenDialog({
+          properties: ["openFile"],
+          filters: [{ name: "Model", extensions: ["gguf"] }],
+        });
+        const { filePaths } = dialogResult;
+        if (filePaths.length > 0) {
+          const path = filePaths[0];
+          event.sender.send("node-code-response", {
+            func: "select-model",
+            path,
+          });
+        }
+        break;
+
       case "load-llama":
         try {
           console.log("Cargando Llama...");

@@ -1,7 +1,7 @@
 <div class="flex flex-row">
-  <app-sidebar></app-sidebar>
+  <app-sidebar #sidebar></app-sidebar>
   <div class="flex-col w-full">
-    <app-header></app-header>
+    <app-header (toggleSidebar)="onToggleSidebar()"></app-header>
     <div class="w-full">
       <router-outlet></router-outlet>
     </div>

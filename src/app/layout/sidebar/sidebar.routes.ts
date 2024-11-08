@@ -21,14 +21,14 @@ export const APP_ROUTES: MainRouteInfo[] = [
     path: '/dashboard',
     routes: [
       {
-        path: '/dashboard/test',
-        title: 'TEST.TITLE',
-        icon: 'pi pi-test',
+        path: '/dashboard/config',
+        title: 'CONFIG.TITLE',
+        icon: 'pi pi-microchip-ai',
       },
       {
         path: '/dashboard/chat',
-        title: 'Chat',
-        icon: 'pi pi-chat',
+        title: 'CHAT.TITLE',
+        icon: 'pi pi-comments',
       },
     ],
   },

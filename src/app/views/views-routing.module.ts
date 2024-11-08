@@ -1,8 +1,9 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { TestComponent } from './test/test.component';
 import { ViewsComponent } from './views.component';
 import { ChatComponent } from './chat/chat.component';
+import { ConfigComponent } from './config/config.component';
+import { TitleResolver } from '../@shared/service/title.resolver';
 
 const routes: Routes = [
   {
@@ -10,15 +11,17 @@ const routes: Routes = [
     component: ViewsComponent,
     children: [
       {
-        path: 'test',
-        title: 'Llama',
+        path: 'config',
+        title: TitleResolver,
+        data: { titleKey: 'CONFIG.TITLE' },
         loadChildren: () =>
-          import('./test/test.module').then((m) => m.TestModule),
-        component: TestComponent,
+          import('./config/config.module').then((m) => m.ConfigModule),
+        component: ConfigComponent,
       },
       {
         path: 'chat',
-        title: 'Chat',
+        title: TitleResolver,
+        data: { titleKey: 'CHAT.TITLE' },
         loadChildren: () =>
           import('./chat/chat.module').then((m) => m.ChatModule),
         component: ChatComponent,
@@ -26,7 +29,7 @@ const routes: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        redirectTo: 'test',
+        redirectTo: 'config',
       },
     ],
   },
