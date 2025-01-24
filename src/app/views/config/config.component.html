@@ -27,37 +27,10 @@
 
   <div class="flex flex-col gap-2 w-[30rem]">
     <div class="flex flex-row gap-2 items-center justify-between">
-      <p-button (click)="loadLlama()" [disabled]="llamaLoaded">{{
-        "CONFIG.LOAD_LLAMA" | translate
-      }}</p-button>
-      <p-tag
-        *ngIf="llamaLoaded === undefined"
-        [value]="'COMMON.NONE' | translate"
-        class="uppercase"
-        severity="contrast"
-      ></p-tag>
-      <p-tag
-        *ngIf="llamaLoaded === true"
-        [value]="'COMMON.OK' | translate"
-        class="uppercase"
-        severity="success"
-      ></p-tag>
-      <p-tag
-        *ngIf="llamaLoaded === false"
-        [value]="'COMMON.ERROR' | translate"
-        class="uppercase"
-        severity="danger"
-      ></p-tag>
-    </div>
-  </div>
-
-  <div class="flex flex-col gap-2 w-[30rem]">
-    <div class="flex flex-row gap-2 items-center justify-between">
       <p-button
-        (click)="loadModel()"
+        (click)="selectModel()"
         icon="pi pi-file-arrow-up"
         [label]="modelName ? modelName : ('CONFIG.LOAD_MODEL' | translate)"
-        [disabled]="llamaLoaded === undefined ? true : llamaLoaded === false"
       />
       <p-tag
         *ngIf="modelLoaded === undefined"

@@ -7,24 +7,27 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ConfigComponent implements OnInit {
   public electronTest?: boolean;
-  public llamaLoaded?: boolean;
   public modelLoaded?: boolean | null;
-  public modelPath?: string;
   public modelName?: string;
   constructor() {}
 
   async ngOnInit() {
     try {
       const response = await (window as any).electronAPI.runNodeCode({
-        func: 'llm-state',
+        func: 'state',
       });
 
       this.electronTest = true;
-      if (response.llama.loaded) this.llamaLoaded = true;
-      if (response.model.loaded) this.modelLoaded = true;
+      if (response.modelPath) {
+        this.modelLoaded = true;
+        this.modelName = response.modelPath;
+        if (this.modelName) {
+          this.modelName = this.modelName.split('\\').pop() || '';
+          this.modelName = this.modelName.split('/').pop() || '';
+        }
+      }
     } catch (error) {
       this.electronTest = false;
-      this.llamaLoaded = false;
       this.modelLoaded = false;
     }
   }
@@ -41,45 +44,13 @@ export class ConfigComponent implements OnInit {
     }
   }
 
-  async loadLlama() {
+  async selectModel() {
     try {
       const response = await (window as any).electronAPI.runNodeCode({
-        func: 'load-llama',
+        func: 'select_model',
       });
-      this.llamaLoaded = response.llama.loaded;
-    } catch (error) {
-      console.log(error);
-      this.llamaLoaded = false;
-    }
-  }
-
-  async loadModel() {
-    try {
-      const response = await (window as any).electronAPI.runNodeCode({
-        func: 'select-model',
-      });
-      this.modelPath = response.path;
-      this.modelName = response.path;
-      if (this.modelName) {
-        this.modelName = this.modelName.split('\\').pop() || '';
-        this.modelName = this.modelName.split('/').pop() || '';
-      }
-      this.modelLoaded = null;
-
-      if (this.modelPath) this.loadModelPath(this.modelPath);
-    } catch (error) {
-      console.log(error);
-      this.modelLoaded = false;
-    }
-  }
-
-  async loadModelPath(path: string) {
-    try {
-      const response = await (window as any).electronAPI.runNodeCode({
-        func: 'load-model',
-        path: path,
-      });
-      this.modelLoaded = response.model.loaded;
+      this.modelName = response.modelName;
+      this.modelLoaded = true;
     } catch (error) {
       console.log(error);
       this.modelLoaded = false;

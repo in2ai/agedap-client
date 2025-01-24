@@ -41,13 +41,12 @@ export class ChatComponent implements OnInit {
 
     try {
       const response = await (window as any).electronAPI.runNodeCode({
-        func: 'llm-state',
+        func: 'state',
       });
 
-      if (response && response.llama.loaded && response.model.loaded) {
-        this.loadChatSession();
+      if (response && response.modelPath) {
+        this.chatLoaded = true;
       } else {
-        console.log('NGONINTI ERROR RESPONSE: ', response);
         this.errorMessage = this.translateService.instant(
           'COMMON.MODEL_NOT_LOADED'
         );
@@ -70,25 +69,6 @@ export class ChatComponent implements OnInit {
     }
   }
 
-  async loadChatSession() {
-    try {
-      const response = await (window as any).electronAPI.runNodeCode({
-        func: 'create-chat-session',
-      });
-
-      if (response && response.chatSession)
-        this.chatLoaded = response.chatSession.loaded;
-      else {
-        console.log('LOAD CHAT SESSION ERROR RESPONSE: ', response);
-        this.errorMessage = this.translateService.instant('COMMON.ERROR');
-      }
-    } catch (error) {
-      console.log('LOAD CHAT SESSION ERROR: ', error);
-      this.errorMessage = this.translateService.instant('COMMON.ERROR');
-      this.chatLoaded = false;
-    }
-  }
-
   async sendMessage() {
     const message = this.form.get('message')?.value;
     this.form.get('message')?.setValue('');
@@ -100,12 +80,18 @@ export class ChatComponent implements OnInit {
     try {
       this.generatingResponse = true;
       const response = await (window as any).electronAPI.runNodeCode({
+        func: 'send_message_stream',
+        message: message,
+        id: 'chat_1',
+      });
+
+      /*const response = await (window as any).electronAPI.runNodeCode({
         func: 'send-message-stream',
         message: message,
       });
       this.messages = response.chatSession.simplifiedChat;
       this.changeDetector.detectChanges();
-      this.chat.nativeElement.scrollTop = this.chat.nativeElement.scrollHeight;
+      this.chat.nativeElement.scrollTop = this.chat.nativeElement.scrollHeight;*/
     } catch (error) {
       console.log(error);
     } finally {

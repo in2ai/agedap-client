@@ -1,6 +1,7 @@
 import { ipcMain } from "electron";
 import { llmFunctions, llmState } from "./llama.mjs";
 import { dialog } from "electron";
+import { app, loadModel, modelPath } from "./langchain.mjs";
 
 export function handleRunNodeCode() {
   ipcMain.on("run-node-code", async (event, data) => {
@@ -150,6 +151,59 @@ export function handleRunNodeCode() {
           ...llmState.state,
         });
         break;
+      }
+
+      case "state": {
+        const state = {
+          modelPath: modelPath,
+        };
+        event.sender.send("node-code-response", {
+          func: "state",
+          ...state,
+        });
+        break;
+      }
+      case "select_model": {
+        const dialogResult = await dialog.showOpenDialog({
+          properties: ["openFile"],
+          filters: [{ name: "Model", extensions: ["gguf"] }],
+        });
+        const { filePaths } = dialogResult;
+
+        if (filePaths.length > 0) {
+          const modelPath = filePaths[0];
+          let modelName = modelPath;
+          modelName = modelName.split("\\").pop() || "";
+          modelName = modelName.split("/").pop() || "";
+
+          await loadModel(modelPath);
+          event.sender.send("node-code-response", {
+            func: "select_model",
+            modelName,
+            modelPath,
+          });
+        }
+      }
+      case "send_message_stream": {
+        const { message, id } = data;
+        const input = {
+          messages: [
+            {
+              role: "user",
+              content: message,
+            },
+          ],
+        };
+        const config = { configurable: { thread_id: id } };
+        //const output = await app.invoke(input, config);
+        //streaming
+        /*app.streamEvents(input, config).on("data", (chunk) => {
+          console.log(chunk);
+        });*/
+        for await (const chunk of await app.stream(input, config)) {
+          console.log(chunk);
+        }
+        //console.log(output.messages[output.messages.length - 1]);
       }
       default: {
         event.sender.send("node-code-response", "Función no encontrada");

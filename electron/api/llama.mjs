@@ -238,7 +238,7 @@ export const llmFunctions = {
         }
 
         try {
-          llmState.state = {
+          /*llmState.state = {
             ...llmState.state,
             chatSession: {
               loaded: false,
@@ -267,7 +267,7 @@ export const llmFunctions = {
               ...llmState.state.chatSession,
               loaded: true,
             },
-          };
+          };*/
         } catch (err) {
           console.error("Failed to create chat session", err);
           llmState.state = {
