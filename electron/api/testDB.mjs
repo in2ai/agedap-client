@@ -1,23 +1,36 @@
 import {
   startMongoServer,
   newChat,
-  updateChat,
+  addMessageToChat,
+  replaceMessages,
   getChat,
   stopMongoServer,
-} from "./chatManager.mjs";
+} from "./chat.js";
 
 (async () => {
   try {
     await startMongoServer();
 
-    const chatId = await newChat("group");
+    // Crear un nuevo chat
+    const chatId = await newChat();
     console.log("Nuevo chat creado con ID:", chatId);
 
-    await updateChat(chatId, "¡Hola, este es un mensaje!");
-    const chat = await getChat(chatId);
-    console.log("Contenido del chat:", chat);
+    // Añadir mensajes al chat
+    await addMessageToChat(chatId, "Hola, soy el modelo.", "model");
+    await addMessageToChat(chatId, "Hola, soy el usuario.", "user");
 
-    // Detener el servidor al final (opcional)
+    // Reemplazar los mensajes con un nuevo conjunto
+    const newMessages = [
+      { message: "Mensaje nuevo 1", type: "model" },
+      { message: "Mensaje nuevo 2", type: "user" },
+    ];
+    await replaceMessages(chatId, newMessages);
+
+    // Obtener el chat completo después del reemplazo
+    const updatedChat = await getChat(chatId);
+    console.log("Contenido del chat actualizado:", updatedChat);
+
+    // Detener MongoDB al finalizar
     await stopMongoServer();
   } catch (error) {
     console.error("Error en la aplicación:", error);

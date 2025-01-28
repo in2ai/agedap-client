@@ -31,9 +31,9 @@ export async function startMongoServer() {
 }
 
 // Función para crear un nuevo chat
-export async function newChat(type) {
+export async function newChat() {
   const id = uuidv4();
-  const chat = { id, type, messages: [], date: new Date() };
+  const chat = { id, messages: [], createdAt: new Date() };
 
   const chatsCollection = db.collection("chats");
   await chatsCollection.insertOne(chat);
@@ -42,13 +42,19 @@ export async function newChat(type) {
 }
 
 // Función para añadir un mensaje a un chat existente
-export async function updateChat(id, message) {
+export async function addMessageToChat(chatId, messageContent, messageType) {
   const chatsCollection = db.collection("chats");
 
+  const newMessage = {
+    message: messageContent,
+    type: messageType, // Ejemplo: "model", "user" u otro valor
+    date: new Date(),
+  };
+
   const result = await chatsCollection.updateOne(
-    { id },
+    { id: chatId },
     {
-      $push: { messages: { message, date: new Date() } },
+      $push: { messages: newMessage },
     }
   );
 
@@ -57,16 +63,39 @@ export async function updateChat(id, message) {
   }
 }
 
-// Función para obtener un chat
-export async function getChat(id) {
+// Función para reemplazar todos los mensajes de un chat
+export async function replaceMessages(chatId, newMessages) {
   const chatsCollection = db.collection("chats");
-  return await chatsCollection.findOne({ id });
+
+  // Validar que los mensajes tienen la estructura adecuada
+  const validMessages = newMessages.map((msg) => ({
+    message: msg.message,
+    type: msg.type,
+    date: msg.date || new Date(),
+  }));
+
+  const result = await chatsCollection.updateOne(
+    { id: chatId },
+    {
+      $set: { messages: validMessages },
+    }
+  );
+
+  if (result.matchedCount === 0) {
+    throw new Error("Chat no encontrado");
+  }
 }
 
-// Función para eliminar un chat
-export async function deleteChat(id) {
+// Función para obtener un chat por su ID
+export async function getChat(chatId) {
   const chatsCollection = db.collection("chats");
-  await chatsCollection.deleteOne({ id });
+  return await chatsCollection.findOne({ id: chatId });
+}
+
+// Función para eliminar un chat por su ID
+export async function deleteChat(chatId) {
+  const chatsCollection = db.collection("chats");
+  await chatsCollection.deleteOne({ id: chatId });
 }
 
 // Cierra MongoDB al terminar
