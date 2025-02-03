@@ -16,7 +16,8 @@ type Message = {
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',
-  styleUrls: [],
+  standalone: false,
+  styles: [':host { width: 100%; }'],
 })
 export class ChatComponent implements OnInit {
   chatId = 'chat_1';

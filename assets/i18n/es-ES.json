@@ -151,10 +151,10 @@
     }
   },
   "DASHBOARD": {
-    "TITLE": "Páginas"
+    "TITLE": "Panel de control"
   },
   "CONFIG": {
-    "TITLE": "Llama",
+    "TITLE": "Configuración",
     "ELECTRON_TEST": "Comunicación con Electron",
     "LOAD_LLAMA": "Cargar Llama",
     "LOAD_MODEL_LABEL": "Ruta del modelo",

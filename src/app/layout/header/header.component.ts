@@ -18,6 +18,7 @@ import { TranslateService } from '@ngx-translate/core';
 export class HeaderComponent implements OnInit, OnDestroy {
   @Output() toggleSidebar: EventEmitter<void> = new EventEmitter<void>();
   public title: string = '';
+  public icon: string = '';
 
   private sidebarRoutes: MainRouteInfo[] = APP_ROUTES;
   public tabs: MenuItem[] = [];
@@ -39,13 +40,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
         const mainRoute = this.sidebarRoutes.find((route) =>
           currentRoute.includes(route.path)
         );
+        console.log('mainRoute', mainRoute);
 
-        if (
-          mainRoute &&
-          mainRoute.tabs &&
-          mainRoute.routes &&
-          mainRoute.routes.length > 0
-        ) {
+        if (mainRoute && mainRoute.routes && mainRoute.routes.length > 0) {
           this.tabs = mainRoute.routes.map((route) => {
             return {
               label: this.translateService.instant(route.title),
@@ -57,6 +54,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
           this.activeTab = this.tabs.find((tab) =>
             currentRoute.includes(tab.routerLink)
           );
+          console.log('activeTab', this.activeTab);
+          this.icon = this.activeTab?.icon || 'pi pi-home';
         } else {
           this.activeTab = undefined;
           this.tabs = [];

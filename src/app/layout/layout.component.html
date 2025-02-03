@@ -1,9 +1,13 @@
-<div class="flex flex-row">
-  <app-sidebar #sidebar></app-sidebar>
-  <div class="flex-col w-full">
-    <app-header (toggleSidebar)="onToggleSidebar()"></app-header>
-    <div class="w-full">
-      <router-outlet></router-outlet>
+<div class="flex w-dvw h-dvh">
+  <div class="flex flex-row w-full h-full">
+    <app-sidebar></app-sidebar>
+    <div class="flex flex-1 flex-col px-3">
+      <div class="flex-none">
+        <app-header></app-header>
+      </div>
+      <main class="flex flex-1 overflow-y-auto py-3">
+        <router-outlet />
+      </main>
     </div>
   </div>
 </div>

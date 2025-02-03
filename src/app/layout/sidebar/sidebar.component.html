@@ -1,61 +1,44 @@
-<p-sidebar [(visible)]="sidebarVisible" class="flex flex-col">
-  <ng-template pTemplate="headless">
-    <div class="bg-sidebar-bg w-full h-full">
-      <div
-        class="flex align-items-center justify-content-between px-4 pt-3 flex-shrink-0"
-      >
-        <span class="inline-flex flex-col align-items-left gap-2">
-          <span class="font-semibold text-lg text-logo-color">{{
-            appName
+<div class="bg-slate-300 w-full h-full">
+  <div
+    class="flex align-items-center justify-content-between pl-4 pt-3 flex-shrink-0"
+  >
+    <span class="inline-flex flex-col align-items-left gap-2">
+      <span class="font-semibold text-lg text-logo-color">{{ appName }}</span>
+    </span>
+  </div>
+  <div class="overflow-y-auto">
+    <ul class="list-none p-3 m-0">
+      <li *ngFor="let mainRoute of mainRoutes" class="mb-3">
+        <div
+          pRipple
+          [ngClass]="
+            'p-3 flex align-items-center justify-content-between text-600 cursor-pointer p-ripple ' +
+            (isMainRouteActive(mainRoute) ? 'font-bold' : '')
+          "
+        >
+          <span class="font-bold text-lg text-slate-900-900">{{
+            mainRoute.title | translate
           }}</span>
-        </span>
-        <p-button
-          icon="pi pi-times"
-          class="p-button-rounded p-button-text"
-          (click)="sidebarVisible = false"
-          rounded="true"
-          outlined="true"
-          styleClass="h-2rem w-2rem"
-        ></p-button>
-      </div>
-      <div class="overflow-y-auto">
-        <ul class="list-none p-3 m-0">
-          <li *ngFor="let mainRoute of mainRoutes" class="mb-3">
-            <div
+        </div>
+        <ul class="list-none p-0 m-0 overflow-hidden">
+          <li *ngFor="let route of mainRoute.routes">
+            <a
               pRipple
-              pStyleClass="@next"
-              enterFromClass="hidden"
-              enterActiveClass="slidedown"
-              leaveToClass="hidden"
-              leaveActiveClass="slideup"
+              [routerLink]="route.path"
+              [queryParams]="route.params"
               [ngClass]="
-                'p-3 flex align-items-center justify-content-between text-600 cursor-pointer p-ripple ' +
-                (isMainRouteActive(mainRoute) ? 'font-bold' : '')
+                'flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple ' +
+                (isRouteActive(route)
+                  ? 'bg-slate-200 text-gray-900 font-semibold'
+                  : ' text-gray-700')
               "
             >
-              <span class="uppercase">{{ mainRoute.title | translate }}</span>
-              <i class="pi pi-chevron-down"></i>
-            </div>
-            <ul class="list-none p-0 m-0 overflow-hidden">
-              <li *ngFor="let route of mainRoute.routes">
-                <a
-                  pRipple
-                  [routerLink]="route.path"
-                  [queryParams]="route.params"
-                  [ngClass]="
-                    'flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple ' +
-                    (isRouteActive(route) ? 'bg-slate-300' : '')
-                  "
-                  (click)="toggleSidebar()"
-                >
-                  <i [ngClass]="route.icon + ' mr-2'"></i>
-                  <span class="font-medium">{{ route.title | translate }}</span>
-                </a>
-              </li>
-            </ul>
+              <i [ngClass]="route.icon + ' mr-2 text-xl'"></i>
+              <span class="text-md">{{ route.title | translate }}</span>
+            </a>
           </li>
         </ul>
-      </div>
-    </div>
-  </ng-template>
-</p-sidebar>
+      </li>
+    </ul>
+  </div>
+</div>

@@ -11,6 +11,7 @@ import { HeaderComponent } from './header/header.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { TabMenuModule } from 'primeng/tabmenu';
 import { SidebarModule } from 'primeng/sidebar';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 @NgModule({
   declarations: [LayoutComponent, HeaderComponent, SidebarComponent],
@@ -24,6 +25,7 @@ import { SidebarModule } from 'primeng/sidebar';
     TranslateModule,
     TabMenuModule,
     SidebarModule,
+    ProgressSpinnerModule,
   ],
   providers: [DatePipe],
   exports: [LayoutComponent],

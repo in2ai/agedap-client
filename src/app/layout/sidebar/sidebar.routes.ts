@@ -23,7 +23,7 @@ export const APP_ROUTES: MainRouteInfo[] = [
       {
         path: '/dashboard/config',
         title: 'CONFIG.TITLE',
-        icon: 'pi pi-microchip-ai',
+        icon: 'pi pi-cog',
       },
       {
         path: '/dashboard/chat',

@@ -3,7 +3,8 @@ import { Component, OnInit } from '@angular/core';
 @Component({
   selector: 'app-config',
   templateUrl: './config.component.html',
-  styleUrls: [],
+  standalone: false,
+  styles: [':host { width: 100%; }'],
 })
 export class ConfigComponent implements OnInit {
   public electronTest?: boolean;
