@@ -2,6 +2,7 @@ import { ipcMain } from "electron";
 import { dialog } from "electron";
 import { app, loadModel, modelPath } from "./langchain.mjs";
 import { HumanMessage } from "@langchain/core/messages";
+import { getWorkOffers } from "./relay.mjs";
 const controllers = new Map();
 
 export function handleRunNodeCode() {
@@ -128,6 +129,14 @@ export function handleRunNodeCode() {
           messages,
         });
         break;
+      }
+      case "get_offers": {
+        const { lastTimeStamp, selectedIndustry } = data;
+        const response = await getWorkOffers(lastTimeStamp, selectedIndustry);
+        event.sender.send("node-code-response", {
+          func: "get_offers",
+          response,
+        });
       }
       default: {
         event.sender.send("node-code-response", "Función no encontrada");
