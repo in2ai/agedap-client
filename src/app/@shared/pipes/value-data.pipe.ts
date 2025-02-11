@@ -2,7 +2,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
 @Pipe({
-  name: 'value_data',
+    name: 'value_data',
+    standalone: false
 })
 export class ValueDataPipe implements PipeTransform {
   constructor(private translateService: TranslateService) {}

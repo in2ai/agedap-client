@@ -1,10 +1,14 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { TranslateModule } from '@ngx-translate/core';
+import { ButtonModule } from 'primeng/button';
+import { TagModule } from 'primeng/tag';
 
 @Component({
   selector: 'app-config',
   templateUrl: './config.component.html',
-  standalone: false,
   styles: [':host { width: 100%; }'],
+  imports: [ButtonModule, TranslateModule, TagModule, CommonModule],
 })
 export class ConfigComponent implements OnInit {
   public electronTest?: boolean;

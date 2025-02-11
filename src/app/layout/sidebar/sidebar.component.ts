@@ -1,12 +1,15 @@
 import { Component } from '@angular/core';
 import { APP_ROUTES, MainRouteInfo, RouteInfo } from './sidebar.routes';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { environment } from 'src/environments/environment';
+import { TranslateModule } from '@ngx-translate/core';
+import { CommonModule, NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
   styleUrls: [],
+  imports: [CommonModule, NgClass, TranslateModule, RouterLink],
 })
 export class SidebarComponent {
   constructor(private router: Router) {}

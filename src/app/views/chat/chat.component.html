@@ -4,7 +4,8 @@
       <ng-container *ngIf="!errorMessage"
         ><div class="flex flex-row justify-start items-center">
           <h1 class="text-xl">Cargando chat...</h1>
-        </div></ng-container
+        </div>
+        </ng-container
       >
       <span
         *ngIf="errorMessage"
@@ -27,7 +28,7 @@
         <div
           class="max-w-[80%] p-3 border rounded-lg"
           [ngClass]="{
-            'bg-green-500 text-white': message.type === 'user',
+            'bg-green-700 text-white': message.type === 'user',
             'bg-gray-300 text-black': message.type === 'model',
             'rounded-br-none': message.type === 'user',
             'rounded-bl-none': message.type === 'model'

@@ -1,11 +1,15 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { I18nService } from './@shared/service/translate.service';
 import { environment } from 'src/environments/environment';
+import { ToastModule } from 'primeng/toast';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { LayoutComponent } from './layout/layout.component';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: [],
+  imports: [LayoutComponent, ToastModule, ConfirmDialogModule],
 })
 export class AppComponent implements OnInit, OnDestroy {
   constructor(private i18nService: I18nService) {}

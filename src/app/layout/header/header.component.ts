@@ -8,12 +8,14 @@ import {
 import { Router } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { APP_ROUTES, MainRouteInfo } from '../sidebar/sidebar.routes';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: [],
+  imports: [CommonModule, TranslateModule],
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   @Output() toggleSidebar: EventEmitter<void> = new EventEmitter<void>();
