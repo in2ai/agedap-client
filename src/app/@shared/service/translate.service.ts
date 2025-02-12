@@ -2,8 +2,8 @@ import { registerLocaleData } from '@angular/common';
 import localeEn from '@angular/common/locales/en';
 import localeEs from '@angular/common/locales/es';
 import { Injectable } from '@angular/core';
-import esES from 'assets/i18n/es-ES.json';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
+import esES from 'assets/i18n/es-ES.json';
 import { Subscription } from 'rxjs';
 
 const languageKey = 'language';
@@ -51,8 +51,6 @@ export class I18nService {
   }
 
   set language(language: string) {
-    localStorage.getItem(languageKey) ||
-      this.translateService.getBrowserCultureLang();
     let isSupportedLanguage = this.supportedLanguages.includes(language);
 
     if (language && !isSupportedLanguage) {

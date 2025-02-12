@@ -1,19 +1,8 @@
-<div
-  id="header"
-  class="flex flex-col sticky top-0 overflow-hidden w-full bg-white justify-content-center items-between z-40 shadow-md"
->
-  <div class="flex flex-row gap-2 justify-content-start items-center p-4">
-    <p-button
-      icon="pi pi-bars"
-      class="p-button-rounded p-button-text"
-      rounded="true"
-      text="true"
-      styleClass="h-2rem w-2rem"
-      (click)="toggleSidebarButton()"
-    ></p-button>
-    <h1 class="text-2xl font-bold text-logo-color">{{ title | translate }}</h1>
-  </div>
-  <div *ngIf="activeTab" class="px-4">
-    <p-tabMenu [model]="tabs" [activeItem]="activeTab"></p-tabMenu>
-  </div>
-</div>
+<header>
+  <h1 class="border-b border-dotted border-slate-300 text-slate-500 py-3">
+    <div class="flex flex-row justify-start items-center">
+      <i [ngClass]="icon + ' text-lg'"></i>
+      <span class="pl-2 text-sm font-semibold">{{ title | translate }}</span>
+    </div>
+  </h1>
+</header>

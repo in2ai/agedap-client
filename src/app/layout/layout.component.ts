@@ -1,35 +1,18 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
-import { PrimeNGConfig } from 'primeng/api';
+import { Component, ViewChild } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { HeaderComponent } from './header/header.component';
+import { SidebarComponent } from './sidebar/sidebar.component';
 
 @Component({
   selector: 'app-layout',
   templateUrl: './layout.component.html',
+  imports: [HeaderComponent, SidebarComponent, RouterOutlet],
   styleUrls: [],
 })
-export class LayoutComponent implements OnInit {
+export class LayoutComponent {
   @ViewChild('sidebar') sidebar: any;
 
-  constructor(
-    private primeNGConfig: PrimeNGConfig,
-    private translateService: TranslateService
-  ) {}
-
-  ngOnInit() {
-    const primeNgTranslation = this.translateService.instant('PRIMENG');
-    this.primeNGConfig.ripple = true;
-    this.primeNGConfig.setTranslation(primeNgTranslation);
-    this.primeNGConfig.zIndex = {
-      overlay: 1000,
-      modal: 1100,
-      dropdown: 1200,
-      overlaySticky: 1300,
-      sidebar: 1400,
-      dialog: 1500,
-      overlayMenu: 1600,
-      tooltip: 1700,
-    };
-  }
+  constructor() {}
 
   onToggleSidebar() {
     this.sidebar.toggleSidebar();

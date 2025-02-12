@@ -1,12 +1,9 @@
-import {
-  ChangeDetectorRef,
-  Component,
-  ElementRef,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { CommonModule, NgFor } from '@angular/common';
+import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
+import { MarkdownModule } from 'ngx-markdown';
+import { ButtonModule } from 'primeng/button';
 
 type Message = {
   type: 'user' | 'model';
@@ -16,14 +13,14 @@ type Message = {
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',
-  styleUrls: [],
+  styles: [':host { width: 100%; }'],
+  imports: [MarkdownModule, CommonModule, NgFor, ReactiveFormsModule, ButtonModule],
 })
 export class ChatComponent implements OnInit {
   chatId = 'chat_1';
 
   @ViewChild('chat') chat!: ElementRef;
-  public headerHeight: number =
-    document.getElementById('header')?.offsetHeight || 0;
+  public headerHeight: number = document.getElementById('header')?.offsetHeight || 0;
   public chatLoaded: boolean = false;
   public generatingResponse: boolean = false;
   public errorMessage?: string;
@@ -49,12 +46,11 @@ export class ChatComponent implements OnInit {
       if (response && response.modelPath) {
         this.chatLoaded = true;
       } else {
-        this.errorMessage = this.translateService.instant(
-          'COMMON.MODEL_NOT_LOADED'
-        );
+        this.errorMessage = this.translateService.instant('COMMON.MODEL_NOT_LOADED');
       }
 
       (window as any).electronAPI.onPartialResponse((event: any, data: any) => {
+        console.log('//REQUEST OK: ', data);
         if (data.func === 'partial-response' && data.chat_id === this.chatId) {
           const newContent = data.content;
           //if last message is from model, update it else add new message
@@ -67,18 +63,17 @@ export class ChatComponent implements OnInit {
           } else {
             this.messages.push({ type: 'model', message: newContent });
           }
+          console.log('//Messages: ', this.messages);
           this.changeDetector.detectChanges();
-          this.chat.nativeElement.scrollTop =
-            this.chat.nativeElement.scrollHeight;
-        } else if (
-          data.func === 'stop_generating_response' &&
-          data.chat_id === this.chatId
-        ) {
+          this.chat.nativeElement.scrollTop = this.chat.nativeElement.scrollHeight;
+        } else if (data.func === 'stop_generating_response' && data.chat_id === this.chatId) {
+          console.log('Stopped generating response');
           this.generatingResponse = false;
           this.form.get('message')?.enable();
         }
       });
     } catch (error) {
+      console.log(error);
       this.errorMessage = this.translateService.instant('COMMON.ERROR');
     }
   }

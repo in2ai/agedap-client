@@ -1,0 +1,11 @@
+@import 'tailwindcss';
+
+a {
+  text-decoration: none;
+}
+
+markdown {
+  p {
+    margin: 0;
+  }
+}

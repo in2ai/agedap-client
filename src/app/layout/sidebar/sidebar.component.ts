@@ -1,18 +1,25 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { APP_ROUTES, MainRouteInfo, RouteInfo } from './sidebar.routes';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
+import { NavLinkComponent } from 'src/app/components/ui/nav-link/nav-link.component';
 import { environment } from 'src/environments/environment';
+import { MainRouteInfo, RouteInfo } from 'src/models';
+import { APP_ROUTES, CONFIG_ROUTE } from './sidebar.routes';
 
 @Component({
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
   styleUrls: [],
+  imports: [CommonModule, TranslateModule, RouterLink, NavLinkComponent],
 })
 export class SidebarComponent {
   constructor(private router: Router) {}
 
-  public sidebarVisible: boolean = false;
+  public sidebarCollapsed = false;
+  public sidebarVisible = false;
   public mainRoutes: MainRouteInfo[] = APP_ROUTES;
+  public configRoute: RouteInfo = CONFIG_ROUTE;
   public appName: string = environment.appName;
 
   isMainRouteActive(route: MainRouteInfo) {
@@ -36,5 +43,9 @@ export class SidebarComponent {
 
   toggleSidebar() {
     this.sidebarVisible = !this.sidebarVisible;
+  }
+
+  topggleSidebarCollapse() {
+    this.sidebarCollapsed = !this.sidebarCollapsed;
   }
 }

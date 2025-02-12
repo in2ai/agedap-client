@@ -1,26 +1,23 @@
-import {
-  Component,
-  EventEmitter,
-  OnDestroy,
-  OnInit,
-  Output,
-} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MenuItem } from 'primeng/api';
-import { APP_ROUTES, MainRouteInfo } from '../sidebar/sidebar.routes';
-import { TranslateService } from '@ngx-translate/core';
+import { MainRouteInfo } from 'src/models';
+import { APP_ROUTES } from '../sidebar/sidebar.routes';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: [],
+  imports: [CommonModule, TranslateModule],
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   @Output() toggleSidebar: EventEmitter<void> = new EventEmitter<void>();
   public title: string = '';
+  public icon: string = '';
 
-  private sidebarRoutes: MainRouteInfo[] = APP_ROUTES;
-  public tabs: MenuItem[] = [];
+  private appRoutes: MainRouteInfo[] = APP_ROUTES;
   public activeTab: MenuItem | undefined = undefined;
 
   private subscriptions: any[] = [];
@@ -33,34 +30,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.title = document.title;
     this.subscriptions = [
       this.router.events.subscribe(() => {
-        this.title = document.title;
-
         const currentRoute = this.router.url;
-        const mainRoute = this.sidebarRoutes.find((route) =>
+        const mainRoute = this.appRoutes[0].routes.find((route) =>
           currentRoute.includes(route.path)
         );
-
-        if (
-          mainRoute &&
-          mainRoute.tabs &&
-          mainRoute.routes &&
-          mainRoute.routes.length > 0
-        ) {
-          this.tabs = mainRoute.routes.map((route) => {
-            return {
-              label: this.translateService.instant(route.title),
-              icon: route.icon,
-              routerLink: route.path,
-            };
-          });
-
-          this.activeTab = this.tabs.find((tab) =>
-            currentRoute.includes(tab.routerLink)
-          );
-        } else {
-          this.activeTab = undefined;
-          this.tabs = [];
-        }
+        this.title = mainRoute?.title || document.title;
       }),
     ];
   }

@@ -29,15 +29,7 @@
     "completed": "Completado",
     "pending": "Pendiente",
     "fileSizeTypes": ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"],
-    "dayNames": [
-      "Domingo",
-      "Lunes",
-      "Martes",
-      "Miércoles",
-      "Jueves",
-      "Viernes",
-      "Sábado"
-    ],
+    "dayNames": ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
     "dayNamesShort": ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
     "dayNamesMin": ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sá"],
     "monthNames": [
@@ -151,14 +143,17 @@
     }
   },
   "DASHBOARD": {
-    "TITLE": "Páginas"
+    "TITLE": "Panel de control"
   },
   "CONFIG": {
-    "TITLE": "Llama",
+    "TITLE": "Configuración",
     "ELECTRON_TEST": "Comunicación con Electron",
     "LOAD_LLAMA": "Cargar Llama",
     "LOAD_MODEL_LABEL": "Ruta del modelo",
     "LOAD_MODEL": "Cargar módelo"
+  },
+  "WORKSPACE": {
+    "TITLE": "Espacio de trabajo"
   },
   "CHAT": {
     "TITLE": "Chat"
