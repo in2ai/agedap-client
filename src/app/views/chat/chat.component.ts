@@ -73,6 +73,7 @@ export class ChatComponent implements OnInit {
         }
       });
     } catch (error) {
+      console.log(error);
       this.errorMessage = this.translateService.instant('COMMON.ERROR');
     }
   }

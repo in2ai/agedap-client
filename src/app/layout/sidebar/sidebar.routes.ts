@@ -1,19 +1,4 @@
-import { Params } from '@angular/router';
-
-export interface RouteInfo {
-  path: string;
-  params?: Params;
-  title: string;
-  icon: string;
-  tabs?: RouteInfo[];
-}
-
-export interface MainRouteInfo {
-  title: string;
-  path: string;
-  tabs?: boolean;
-  routes: RouteInfo[];
-}
+import { MainRouteInfo, RouteInfo } from 'src/models';
 
 export const APP_ROUTES: MainRouteInfo[] = [
   {
@@ -21,9 +6,9 @@ export const APP_ROUTES: MainRouteInfo[] = [
     path: '/dashboard',
     routes: [
       {
-        path: '/config',
-        title: 'CONFIG.TITLE',
-        icon: 'pi pi-cog',
+        path: '/workspace',
+        title: 'WORKSPACE.TITLE',
+        icon: 'pi pi-desktop',
       },
       {
         path: '/chat',
@@ -33,3 +18,9 @@ export const APP_ROUTES: MainRouteInfo[] = [
     ],
   },
 ];
+
+export const CONFIG_ROUTE: RouteInfo = {
+  path: '/config',
+  title: 'CONFIG.TITLE',
+  icon: 'pi pi-cog',
+};

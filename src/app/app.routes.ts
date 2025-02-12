@@ -3,6 +3,7 @@ import { TitleResolver } from './@shared/service/title.resolver';
 import { ChatComponent } from './views/chat/chat.component';
 import { ConfigComponent } from './views/config/config.component';
 import { PageNotFoundComponent } from './views/page-not-found/page-not-found.component';
+import { WorkSpaceComponent } from './views/work-space/work-space.component';
 
 export const routes: Routes = [
   {
@@ -17,6 +18,10 @@ export const routes: Routes = [
   {
     path: 'chat',
     component: ChatComponent,
+  },
+  {
+    path: 'workspace',
+    component: WorkSpaceComponent,
   },
   {
     path: '**',

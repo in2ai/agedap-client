@@ -1,0 +1,9 @@
+<button
+  [ngClass]="
+    'w-full cusror-pointer not-visited:rounded-sm text-slate-800 flex flex-row items-center justify-start cursor-pointer transition-colors ease-in-out duration-300 ' +
+    (isActive ? 'bg-slate-50' : 'bg-slate-300 hover:bg-slate-100')
+  "
+>
+  <i [ngClass]="'!text-xl p-3 pi pi-' + primeIcon"></i>
+  <span *ngIf="!isCollapsed" class="font-semibold text-base pr-3">{{ label }}</span>
+</button>
