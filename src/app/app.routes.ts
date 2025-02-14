@@ -3,6 +3,7 @@ import { TitleResolver } from './@shared/service/title.resolver';
 import { ChatComponent } from './views/chat/chat.component';
 import { ConfigComponent } from './views/config/config.component';
 import { PageNotFoundComponent } from './views/page-not-found/page-not-found.component';
+import { WorkSpaceDetailComponent } from './views/work-space-detail/work-space-detail.component';
 import { WorkSpaceNewComponent } from './views/work-space-new/work-space-new.component';
 import { WorkSpaceComponent } from './views/work-space/work-space.component';
 
@@ -27,6 +28,10 @@ export const routes: Routes = [
   {
     path: 'workspace/new',
     component: WorkSpaceNewComponent,
+  },
+  {
+    path: 'workspace/:id',
+    component: WorkSpaceDetailComponent,
   },
   {
     path: '**',

@@ -16,7 +16,7 @@ import { APP_ROUTES, CONFIG_ROUTE } from './sidebar.routes';
 export class SidebarComponent {
   constructor(private router: Router) {}
 
-  public sidebarCollapsed = false;
+  public sidebarCollapsed = true;
   public sidebarVisible = false;
   public mainRoutes: MainRouteInfo[] = APP_ROUTES;
   public configRoute: RouteInfo = CONFIG_ROUTE;

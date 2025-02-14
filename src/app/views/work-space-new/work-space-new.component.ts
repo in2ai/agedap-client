@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { FieldComponent } from 'src/app/components/smart/field/field.component';
 import { ButtonComponent } from 'src/app/components/ui/button/button.component';
@@ -11,6 +12,8 @@ import { ButtonComponent } from 'src/app/components/ui/button/button.component';
   imports: [FieldComponent, ButtonComponent, TranslateModule],
 })
 export class WorkSpaceNewComponent implements OnInit {
+  router = inject(Router);
+
   public WorkSpaceForm!: FormGroup;
 
   constructor() {}
@@ -27,6 +30,8 @@ export class WorkSpaceNewComponent implements OnInit {
   }
 
   saveWorkSpace() {
-    console.log(this.WorkSpaceForm.value);
+    // TODO: API create new workspace and when id retreived navigate to /workspace/:id
+    console.log('SAVE NEW WORKSPACE');
+    this.router.navigate(['/workspace/1']);
   }
 }
