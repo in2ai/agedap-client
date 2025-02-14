@@ -3,8 +3,8 @@ import { Component } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { NavLinkComponent } from 'src/app/components/ui/nav-link/nav-link.component';
+import { MainRouteInfo, RouteInfo } from 'src/app/models';
 import { environment } from 'src/environments/environment';
-import { MainRouteInfo, RouteInfo } from 'src/models';
 import { APP_ROUTES, CONFIG_ROUTE } from './sidebar.routes';
 
 @Component({

@@ -1,8 +1,23 @@
-import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
+import { ButtonComponent } from 'src/app/components/ui/button/button.component';
+import { WorkSpace } from 'src/app/models';
 
 @Component({
   selector: 'app-work-space',
   templateUrl: './work-space.component.html',
-  styleUrl: './work-space.component.css',
+  styles: [':host { width: 100%; }'],
+  imports: [CommonModule, ButtonComponent, TranslateModule],
 })
-export class WorkSpaceComponent {}
+export class WorkSpaceComponent {
+  router = inject(Router);
+
+  // TODO: Implement ferching save workspaces
+  public workSpaces: WorkSpace[] = [];
+
+  createNewWorkSpace() {
+    this.router.navigate(['/workspace/new']);
+  }
+}

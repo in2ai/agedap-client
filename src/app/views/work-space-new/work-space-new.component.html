@@ -1,0 +1,46 @@
+<div class="flex w-full h-full justify-center items-center text-slate-500">
+  <div class="w-1/3">
+    <div class="border border-slate-300 p-5 rounded-md">
+      <div class="flex flex-col gap-4 items-center">
+        <section class="text-justify">
+          <header class="font-bold pb-3 mb-3 border-b border-gray-400 border-dotted">
+            <h1 class="flex flex-row justify-start items-center">
+              <i class="pi pi-desktop pr-2"></i>Crear nuevo espacio de trabajo
+            </h1>
+          </header>
+          <main class="pb-10">
+            <div class="pb-3">
+              <p>
+                Un espacio de trabajo permite guardar un contexto para poder guardar el chat con la
+                IA
+              </p>
+            </div>
+            <!-- Formulario -->
+            <div>
+              <div class="pb-3">
+                <app-field
+                  label="Nombre"
+                  [control]="getWorkSpaceControl('name')"
+                  [placeholder]="'Entrar nombre espacio de trabajo'"
+                />
+              </div>
+              <div class="pb-3">
+                <app-field
+                  label="Descripción"
+                  [control]="getWorkSpaceControl('name')"
+                  [placeholder]="'Entrar descripción espacio de trabajo'"
+                />
+              </div>
+            </div>
+          </main>
+          <footer class="flex justify-end">
+            <app-button
+              (click)="saveWorkSpace()"
+              [label]="'WORKSPACE.CREATE_WORKSPACE' | translate"
+            />
+          </footer>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>

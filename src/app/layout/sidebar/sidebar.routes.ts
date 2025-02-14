@@ -1,4 +1,4 @@
-import { MainRouteInfo, RouteInfo } from 'src/models';
+import { MainRouteInfo, RouteInfo } from 'src/app/models';
 
 export const APP_ROUTES: MainRouteInfo[] = [
   {

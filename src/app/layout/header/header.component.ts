@@ -3,7 +3,7 @@ import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/cor
 import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MenuItem } from 'primeng/api';
-import { MainRouteInfo } from 'src/models';
+import { MainRouteInfo } from 'src/app/models';
 import { APP_ROUTES } from '../sidebar/sidebar.routes';
 
 @Component({

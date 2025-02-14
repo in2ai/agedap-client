@@ -1,5 +1,61 @@
-<div class="flex flex-col w-full h-full p-4 gap-4">
-  <div class="flex flex-col gap-2 w-[30rem]">
+<div class="flex w-full h-full justify-center items-center text-slate-500">
+  <div class="w-1/3">
+    <div *ngIf="!modelLoaded" class="border border-slate-300 p-5 rounded-md">
+      <section class="text-justify">
+        <header class="font-bold pb-3 mb-3 border-b border-gray-400 border-dotted">
+          <h1>Bienvenido a Agedap Llamatron</h1>
+        </header>
+        <main class="pb-10">
+          <p>
+            La primera vez que inicie la aplicación, se le pedirá que seleccione un modelo de
+            lenguaje
+          </p>
+        </main>
+        <footer class="flex justify-end">
+          <app-button
+            [icon]="isSelectingModel ? 'spinner animate-spin' : 'file'"
+            (click)="selectModel()"
+            [label]="
+              isSelectingModel
+                ? ('CONFIG.LOADING_MODEL' | translate)
+                : ('CONFIG.LOAD_MODEL' | translate)
+            "
+          />
+        </footer>
+      </section>
+    </div>
+    <div *ngIf="modelLoaded" class="border-slate-100 p-5 rounded-md">
+      <section class="text-justify">
+        <header class="font-bold pb-3 mb-3 border-b border-gray-200">
+          <h1>Modelo seleccionado</h1>
+        </header>
+        <main class="pb-10">
+          <p>
+            {{ modelName }}
+          </p>
+        </main>
+        <footer class="flex justify-end">
+          <app-button
+            [icon]="isSelectingModel ? 'spinner animate-spin' : 'file'"
+            (click)="selectModel()"
+            [label]="
+              isSelectingModel
+                ? ('CONFIG.LOADING_MODEL' | translate)
+                : ('CONFIG.CHANGE_MODEL' | translate)
+            "
+          />
+        </footer>
+      </section>
+    </div>
+  </div>
+
+  <!-- <app-button
+    icon="power-off"
+    (click)="testElectron()"
+    [label]="'CONFIG.ELECTRON_TEST' | translate"
+  /> -->
+
+  <!-- <div class="flex flex-col gap-2 w-[30rem]">
     <div class="flex flex-row gap-2 items-center justify-between">
       <p-button (click)="testElectron()">{{ 'CONFIG.ELECTRON_TEST' | translate }}</p-button>
       <p-tag
@@ -21,9 +77,9 @@
         severity="danger"
       ></p-tag>
     </div>
-  </div>
+  </div> -->
 
-  <div class="flex flex-col gap-2 w-[30rem]">
+  <!-- <div class="flex flex-col gap-2 w-[30rem]">
     <div class="flex flex-row gap-2 items-center justify-between">
       <p-button
         (click)="selectModel()"
@@ -55,5 +111,5 @@
         severity="danger"
       ></p-tag>
     </div>
-  </div>
+  </div> -->
 </div>

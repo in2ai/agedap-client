@@ -1,5 +1,33 @@
 @import 'tailwindcss';
 
+@theme {
+  --color-sidebarBg: var(--color-slate-300);
+  --color-sidebarText: var(--color-slate-700);
+  --color-mainContentBg: var(--color-slate-200);
+  --color-mainContentText: var(--color-slate-900);
+
+  /* Button */
+  --color-primaryButtonBg: var(--color-slate-400);
+  --color-primaryButtonText: var(--color-white);
+
+  --color-primaryButtonBgHover: var(--color-slate-500);
+  --color-primaryButtonTextHover: var(--color-white);
+
+  --color-primaryButtonDisabledBg: var(--color-slate-300);
+  --color-primaryButtonDisabledText: var(--color-white);
+
+  --color-secondaryButtonBg: var(--color-white);
+  --color-secondaryButtonText: var(--color-slate-400);
+
+  --color-secondaryButtonBgHover: var(--color-white);
+  --color-secondaryButtonTextHover: var(--color-slate-500);
+
+  --color-secondaryButtonDisabledBg: var(--color-white);
+  --color-secondaryButtonDisabledText: var(--color-slate-300);
+
+  --spacing-sidebarW: '200px';
+}
+
 a {
   text-decoration: none;
 }
