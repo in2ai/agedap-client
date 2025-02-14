@@ -150,10 +150,13 @@
     "ELECTRON_TEST": "Comunicación con Electron",
     "LOAD_LLAMA": "Cargar Llama",
     "LOAD_MODEL_LABEL": "Ruta del modelo",
-    "LOAD_MODEL": "Cargar módelo"
+    "LOAD_MODEL": "Cargar modelo...",
+    "CHANGE_MODEL": "Cambiar modelo...",
+    "LOADING_MODEL": "Cargando modelo..."
   },
   "WORKSPACE": {
-    "TITLE": "Espacio de trabajo"
+    "TITLE": "Espacio de trabajo",
+    "CREATE_WORKSPACE": "Crear espacio de trabajo"
   },
   "CHAT": {
     "TITLE": "Chat"

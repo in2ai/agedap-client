@@ -1,19 +1,20 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
-import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
+import { ButtonComponent } from 'src/app/components/ui/button/button.component';
 
 @Component({
   selector: 'app-config',
   templateUrl: './config.component.html',
   styles: [':host { width: 100%; }'],
-  imports: [ButtonModule, TranslateModule, TagModule, CommonModule],
+  imports: [TranslateModule, TagModule, CommonModule, ButtonComponent],
 })
 export class ConfigComponent implements OnInit {
   public electronTest?: boolean;
   public modelLoaded?: boolean | null;
   public modelName?: string;
+  public isSelectingModel?: boolean;
 
   async ngOnInit() {
     try {
@@ -50,6 +51,7 @@ export class ConfigComponent implements OnInit {
   }
 
   async selectModel() {
+    this.isSelectingModel = true;
     try {
       const response = await (window as any).electronAPI.runNodeCode({
         func: 'select_model',
@@ -59,6 +61,8 @@ export class ConfigComponent implements OnInit {
     } catch (error) {
       console.log(error);
       this.modelLoaded = false;
+    } finally {
+      this.isSelectingModel = false;
     }
   }
 }
