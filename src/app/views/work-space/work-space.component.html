@@ -28,6 +28,14 @@
         />
       </div>
     </header>
-    <main class="flex flex-1 bg-slate-500">aggrid</main>
+    <main class="flex flex-1">
+      <ag-grid-angular
+        style="width: 100%; height: 100%"
+        [rowData]="workSpaces"
+        [columnDefs]="colDefs"
+        [defaultColDef]="defaultColDef"
+        (cellClicked)="onCellClicked($event)"
+      />
+    </main>
   </div>
 </div>
