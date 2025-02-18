@@ -2,7 +2,6 @@ import { ipcMain } from 'electron';
 import { dialog } from 'electron';
 import { app, loadModel, modelPath } from './langchain.mjs';
 import { HumanMessage } from '@langchain/core/messages';
-import { getWorkOffers } from './relay.mjs';
 const controllers = new Map();
 
 export function handleRunNodeCode() {
@@ -15,28 +14,6 @@ export function handleRunNodeCode() {
           func: 'test',
           message: 'Función test ejecutada',
         });
-        break;
-      }
-      case 'stop_generating_response': {
-        try {
-          const { chat_id } = data;
-          const controller = controllers.get(chat_id);
-          if (!controller) {
-            throw new Error('No se encontró el controlador');
-          }
-          console.log('Controller: ', controller);
-          controller.abort();
-
-          event.sender.send('node-code-response', {
-            func: 'stop_generating_response',
-            chat_id,
-          });
-        } catch (error) {
-          event.sender.send(
-            'node-code-response',
-            `Error al detener generación de respuesta: ${error.message}`
-          );
-        }
         break;
       }
       case 'state': {
@@ -84,17 +61,9 @@ export function handleRunNodeCode() {
         });
         break;
       }
-      /*case "get_offers": {
-        const { lastTimeStamp, selectedIndustry } = data;
-        const response = await getWorkOffers(lastTimeStamp, selectedIndustry);
-        event.sender.send("node-code-response", {
-          func: "get_offers",
-          response,
-        });
-      }*/
       case 'get_relays': {
         event.sender.send('node-code-response', {
-          func: 'get_offers',
+          func: 'get_relays',
           relays: RELAY_LIST,
         });
         break;
@@ -231,14 +200,6 @@ export function handleRunNodeCode() {
           );
         }
         break;
-      }
-      case 'get_offers': {
-        const { lastTimeStamp, selectedIndustry } = data;
-        const response = await getWorkOffers(lastTimeStamp, selectedIndustry);
-        event.sender.send('node-code-response', {
-          func: 'get_offers',
-          response,
-        });
       }
       default: {
         event.sender.send('node-code-response', 'Función no encontrada');

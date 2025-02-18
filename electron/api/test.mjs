@@ -1,6 +1,6 @@
-import { ChatLlamaCpp } from "@langchain/community/chat_models/llama_cpp";
+import { ChatLlamaCpp } from '@langchain/community/chat_models/llama_cpp';
 
-const llamaPath = "C:\\Users\\adri2\\Desktop\\model.gguf";
+const llamaPath = 'C:\\Users\\adri2\\Desktop\\model.gguf';
 
 const model = await ChatLlamaCpp.initialize({
   modelPath: llamaPath,

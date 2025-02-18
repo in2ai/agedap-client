@@ -1,10 +1,10 @@
-import { useWebSocketImplementation } from "nostr-tools/relay";
-import WebSocket from "ws";
+import { useWebSocketImplementation } from 'nostr-tools/relay';
+import WebSocket from 'ws';
 useWebSocketImplementation(WebSocket);
 
-import { Relay } from "nostr-tools/relay";
+import { Relay } from 'nostr-tools/relay';
 
-const RELAY_URL = "ws://137.184.117.201:8008";
+const RELAY_URL = 'ws://137.184.117.201:8008';
 
 export const getWorkOffers = async (lastTimeStamp, selectedIndustry) => {
   return new Promise(async (resolve, reject) => {
@@ -16,7 +16,7 @@ export const getWorkOffers = async (lastTimeStamp, selectedIndustry) => {
           {
             kinds: [30023],
             since: lastTimeStamp + 1,
-            "#t": [selectedIndustry],
+            '#t': [selectedIndustry],
           },
         ],
         {

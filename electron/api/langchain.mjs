@@ -1,13 +1,7 @@
-import {
-  StateGraph,
-  END,
-  START,
-  MessagesAnnotation,
-  MemorySaver,
-} from "@langchain/langgraph";
-import { ChatPromptTemplate } from "@langchain/core/prompts";
-import { ChatLlamaCpp } from "@langchain/community/chat_models/llama_cpp";
-import { dispatchCustomEvent } from "@langchain/core/callbacks/dispatch";
+import { StateGraph, END, START, MessagesAnnotation, MemorySaver } from '@langchain/langgraph';
+import { ChatPromptTemplate } from '@langchain/core/prompts';
+import { ChatLlamaCpp } from '@langchain/community/chat_models/llama_cpp';
+import { dispatchCustomEvent } from '@langchain/core/callbacks/dispatch';
 
 let model = null;
 export let modelPath = null;
@@ -20,14 +14,14 @@ export const loadModel = async (path) => {
 };
 
 const promptTemplate = ChatPromptTemplate.fromMessages([
-  ["system", "You are a helpful assistant. You can use markdown."],
-  ["placeholder", "{messages}"],
+  ['system', 'You are a helpful assistant. You can use markdown.'],
+  ['placeholder', '{messages}'],
 ]);
 
 const callModel = async (state) => {
   try {
     if (model === null) {
-      throw new Error("Model not loaded");
+      throw new Error('Model not loaded');
     }
 
     if (model._context.sequencesLeft === 0) {
@@ -38,20 +32,20 @@ const callModel = async (state) => {
     const response = await model.invoke(prompt, {
       onToken: async (token) => {
         const detokenized = model._model.tokenizer.detokenize(token);
-        await dispatchCustomEvent("onTextChunk", detokenized);
+        await dispatchCustomEvent('onTextChunk', detokenized);
       },
     });
 
     return { messages: [response] };
   } catch (error) {
-    return { messages: [{ type: "system", text: error.toString() }] };
+    return { messages: [{ type: 'system', text: error.toString() }] };
   }
 };
 
 const workflow = new StateGraph(MessagesAnnotation)
-  .addNode("model", callModel)
-  .addEdge(START, "model")
-  .addEdge("model", END);
+  .addNode('model', callModel)
+  .addEdge(START, 'model')
+  .addEdge('model', END);
 
 export const app = workflow.compile({ checkpointer: new MemorySaver() });
 
