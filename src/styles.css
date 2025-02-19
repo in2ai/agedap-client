@@ -37,3 +37,21 @@ markdown {
     margin: 0;
   }
 }
+
+/* AgGrid related */
+.ag-header {
+  background-color: var(--color-slate-500);
+  color: var(--color-slate-200);
+}
+
+.ag-viewport {
+  background-color: var(--color-slate-300);
+}
+
+.ag-row-even {
+  background-color: var(--color-slate-300);
+}
+
+.ag-row-odd {
+  background-color: var(--color-slate-200);
+}
