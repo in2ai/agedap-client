@@ -212,6 +212,7 @@ export function handleRunNodeCode() {
 
         event.sender.send('onNodeCodeResponse', {
           func: 'loadChat',
+          chatId,
           messages,
         });
         break;
@@ -276,6 +277,7 @@ export function handleRunNodeCode() {
 
         event.sender.send('onNodeCodeResponse', {
           func: 'sendMessage',
+          chatId,
           messages,
         });
         break;
