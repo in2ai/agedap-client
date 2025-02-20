@@ -1,88 +1,79 @@
-import { MongoMemoryServer } from 'mongodb-memory-server';
-import { MongoClient } from 'mongodb';
+import { JSONFilePreset } from 'lowdb/node';
 import { v4 as uuidv4 } from 'uuid';
 import path from 'path';
+import fs from 'fs';
 
-let mongoServer;
-let client;
-let db;
-
-//MongoDb
-export async function startMongoServer() {
-  try {
-    mongoServer = await MongoMemoryServer.create({
-      instance: {
-        dbPath: path.resolve('db'),
-        storageEngine: 'wiredTiger',
-      },
-    });
-
-    const uri = mongoServer.getUri();
-
-    client = new MongoClient(uri);
-    await client.connect();
-    db = client.db('agedap');
-
-    console.log('MongoDB iniciado en:', uri);
-  } catch (error) {
-    console.error('Error al iniciar MongoDB:', error);
-    throw error;
-  }
+const dbPath = path.resolve('db');
+if (!fs.existsSync(dbPath)) {
+  fs.mkdirSync(dbPath);
 }
 
-export async function stopMongoServer() {
-  await client.close();
-  await mongoServer.stop();
-  console.log('MongoDB detenido');
-}
+//Workspaces DB
+const workspacesDb = await JSONFilePreset(path.join(dbPath, 'workspaces.json'), []);
+const chatsDb = await JSONFilePreset(path.join(dbPath, 'chats.json'), []);
 
-//Workspaces
-export async function newWorkspace(type, name, description) {
+// Workspaces
+export async function newWorkspace(type, name, description, documents, relayId) {
   const id = uuidv4();
   const date = new Date();
   const workspace = {
     id,
-    type: type,
-    name: name,
-    description: description,
-    relayId: null,
-    documents: [],
+    type,
+    name,
+    description,
+    relayId,
+    documents,
     createdAt: date,
     updatedAt: date,
   };
-
-  const collection = db.collection('workspace');
-  await collection.insertOne(workspace);
+  await workspacesDb.update((data) => data.push(workspace));
   return workspace;
 }
 
 export async function getAllWorkspaces() {
-  const collection = db.collection('workspace');
-  return await collection.find().toArray();
+  return workspacesDb.data;
 }
 
 export async function getWorkspaces(page, limit) {
-  const collection = db.collection('workspace');
-  return await collection
-    .find()
-    .skip(page * limit)
-    .limit(limit)
-    .toArray();
+  page -= 1;
+  if (page < 0) page = 0;
+  return workspacesDb.data.slice(page * limit, (page + 1) * limit);
 }
 
 export async function getWorkspace(workspaceId) {
-  const collection = db.collection('workspace');
-  return await collection.findOne({ id: workspaceId });
+  return workspacesDb.data.find((w) => w.id === workspaceId);
 }
 
 export async function deleteWorkspace(workspaceId) {
-  const collection = db.collection('workspace');
-  const chatCollection = db.collection('chat');
-  await chatCollection.deleteMany({ workspaceId: workspaceId });
-  await collection.deleteOne({ id: workspaceId });
+  const workspace = await getWorkspace(workspaceId);
+  if (!workspace) throw new Error('Workspace no encontrado');
+
+  chatsDb.data = chatsDb.data.filter((c) => c.workspaceId !== workspaceId);
+  await chatsDb.write();
+
+  workspacesDb.data = workspacesDb.data.filter((w) => w.id !== workspaceId);
+  await workspacesDb.write();
+  return workspace.id;
 }
 
-//Chats
+export async function editWorkspace(workspaceId, name, description, documents, relayId) {
+  const workspace = await getWorkspace(workspaceId);
+  if (!workspace) throw new Error('Workspace no encontrado');
+
+  workspace.name = name;
+  workspace.description = description;
+  workspace.documents = documents;
+  workspace.relayId = relayId;
+  workspace.updatedAt = new Date();
+
+  await workspacesDb.update((data) => {
+    const workspaceIndex = data.findIndex((w) => w.id === workspaceId);
+    data[workspaceIndex] = workspace;
+  });
+  return workspace;
+}
+
+// Chats
 export async function newChat(workspaceId, name, description) {
   const id = uuidv4();
   const date = new Date();
@@ -95,89 +86,77 @@ export async function newChat(workspaceId, name, description) {
     createdAt: date,
     updatedAt: date,
   };
-
-  const collection = db.collection('chat');
-  await collection.insertOne(chat);
+  await chatsDb.update((data) => data.push(chat));
   return chat;
 }
 
-export async function getAllChats() {
-  const collection = db.collection('chat');
-  return await collection.find().toArray();
-}
-
 export async function getChats(workspaceId) {
-  const collection = db.collection('chat');
-  return await collection.find({ workspaceId: workspaceId }).toArray();
+  const chats = chatsDb.data.filter((c) => c.workspaceId === workspaceId);
+  chats.forEach((c) => delete c.messages);
+  return chats;
 }
 
 export async function getChat(chatId) {
-  const collection = db.collection('chat');
-  return await collection.findOne({ id: chatId });
+  return chatsDb.data.find((c) => c.id === chatId);
 }
 
 export async function deleteChat(chatId) {
-  const collection = db.collection('chat');
-  await collection.deleteOne({ id: chatId });
+  chatsDb.data = chatsDb.data.filter((c) => c.id !== chatId);
+  await chatsDb.write();
+  return chatId;
 }
 
 export async function addChatMessage(chatId, message, type) {
-  const collection = db.collection('chat');
+  const chat = await getChat(chatId);
+  if (!chat) throw new Error('Chat no encontrado');
 
-  const date = new Date();
   const messageId = uuidv4();
-  const newMessage = {
-    id: messageId,
-    message: message,
-    type: type,
-    createAt: date,
-    updatedAt: date,
-  };
+  const date = new Date();
+  const newMessage = { id: messageId, message, type, createdAt: date, updatedAt: date };
 
-  const result = await collection.updateOne({ id: chatId }, { $push: { messages: newMessage } });
-  if (result.matchedCount === 0) throw new Error('Chat no encontrado');
+  await chatsDb.update((data) => {
+    const chatIndex = data.findIndex((c) => c.id === chatId);
+    data[chatIndex].messages.push(newMessage);
+  });
   return newMessage;
 }
 
 export async function deleteChatMessage(chatId, messageId) {
-  const collection = db.collection('chat');
+  const chat = await getChat(chatId);
+  if (!chat) throw new Error('Chat no encontrado');
 
-  const result = await collection.updateOne(
-    { id: chatId },
-    { $pull: { messages: { id: messageId } } }
-  );
-  if (result.matchedCount === 0) throw new Error('Chat no encontrado');
+  await chatsDb.update((data) => {
+    const chatIndex = data.findIndex((c) => c.id === chatId);
+    data[chatIndex].messages = data[chatIndex].messages.filter((m) => m.id !== messageId);
+  });
+  return messageId;
 }
 
 export async function editChatMessage(chatId, messageId, message, type) {
-  const collection = db.collection('chat');
+  const chat = await getChat(chatId);
+  if (!chat) throw new Error('Chat no encontrado');
 
-  const date = new Date();
-  const result = await collection.updateOne(
-    { id: chatId, 'messages.id': messageId },
-    {
-      $set: {
-        'messages.$.message': message,
-        'messages.$.type': type,
-        'messages.$.updatedAt': date,
-      },
-    }
-  );
-  if (result.matchedCount === 0) throw new Error('Mensaje no encontrado');
+  const msg = chat.messages.find((m) => m.id === messageId);
+  if (!msg) throw new Error('Mensaje no encontrado');
+
+  msg.message = message;
+  msg.type = type;
+  msg.updatedAt = new Date();
+
+  await chatsDb.update((data) => {
+    const chatIndex = data.findIndex((c) => c.id === chatId);
+    const msgIndex = data[chatIndex].messages.findIndex((m) => m.id === messageId);
+    data[chatIndex].messages[msgIndex] = msg;
+  });
+  return msg;
 }
 
 export async function replaceChatMessages(chatId, newMessages) {
-  const collection = db.collection('chat');
-  const date = new Date();
-  const validMessages = newMessages.map((msg) => ({
-    id: msg.id || uuidv4(),
-    message: msg.message,
-    type: msg.type,
-    createdAt: msg.createdAt || date,
-    updatedAt: msg.updatedAt || date,
-  }));
+  const chat = await getChat(chatId);
+  if (!chat) throw new Error('Chat no encontrado');
 
-  const result = await collection.updateOne({ id: chatId }, { $set: { messages: validMessages } });
-  if (result.matchedCount === 0) throw new Error('Chat no encontrado');
-  return validMessages;
+  await chatsDb.update((data) => {
+    const chatIndex = data.findIndex((c) => c.id === chatId);
+    data[chatIndex].messages = newMessages;
+  });
 }

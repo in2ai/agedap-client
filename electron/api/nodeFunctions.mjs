@@ -12,8 +12,6 @@ import {
   newChat,
   newWorkspace,
   replaceChatMessages,
-  startMongoServer,
-  stopMongoServer,
 } from './db.mjs';
 const controllers = new Map();
 
@@ -95,9 +93,7 @@ export function handleRunNodeCode() {
       //Workspaces
       case 'newWorkspace': {
         const { type, name, description } = data;
-        await startMongoServer();
         const workspace = await newWorkspace(type, name, description);
-        await stopMongoServer();
         event.sender.send('onNodeCodeResponse', {
           func: 'newWorkspace',
           workspace,
@@ -106,9 +102,7 @@ export function handleRunNodeCode() {
       }
       case 'getWorkspaces': {
         const { page, limit } = data;
-        await startMongoServer();
         const workspaces = await getWorkspaces(page, limit);
-        await stopMongoServer();
         event.sender.send('onNodeCodeResponse', {
           func: 'getWorkspaces',
           workspaces,
@@ -117,9 +111,7 @@ export function handleRunNodeCode() {
       }
       case 'getWorkspace': {
         const { workspaceId } = data;
-        await startMongoServer();
         const workspace = await getWorkspace(workspaceId);
-        await stopMongoServer();
         event.sender.send('onNodeCodeResponse', {
           func: 'getWorkspace',
           workspace,
@@ -128,9 +120,7 @@ export function handleRunNodeCode() {
       }
       case 'deleteWorkspace': {
         const { workspaceId } = data;
-        await startMongoServer();
         await deleteWorkspace(workspaceId);
-        await stopMongoServer();
         event.sender.send('onNodeCodeResponse', {
           func: 'deleteWorkspace',
           workspaceId,
@@ -141,9 +131,7 @@ export function handleRunNodeCode() {
       //Chats
       case 'newChat': {
         const { workspaceId, name, description } = data;
-        await startMongoServer();
         const chat = await newChat(workspaceId, name, description);
-        await stopMongoServer();
         event.sender.send('onNodeCodeResponse', {
           func: 'newChat',
           chat,
@@ -152,9 +140,7 @@ export function handleRunNodeCode() {
       }
       case 'getChats': {
         const { workspaceId } = data;
-        await startMongoServer();
         const chats = await getChats(workspaceId);
-        await stopMongoServer();
         event.sender.send('onNodeCodeResponse', {
           func: 'getChats',
           chats,
@@ -163,9 +149,7 @@ export function handleRunNodeCode() {
       }
       case 'getChat': {
         const { chatId } = data;
-        await startMongoServer();
         const chat = await getChat(chatId);
-        await stopMongoServer();
         event.sender.send('onNodeCodeResponse', {
           func: 'getChat',
           chat,
@@ -174,9 +158,7 @@ export function handleRunNodeCode() {
       }
       case 'deleteChat': {
         const { chatId } = data;
-        await startMongoServer();
         await deleteChat(chatId);
-        await stopMongoServer();
         event.sender.send('onNodeCodeResponse', {
           func: 'deleteChat',
           chatId,
@@ -187,10 +169,7 @@ export function handleRunNodeCode() {
       //Chat IA
       case 'loadChat': {
         const { chatId } = data;
-        await startMongoServer();
         const chat = await getChat(chatId);
-        await stopMongoServer();
-
         const loadedMessages = chat.messages.map((msg) => {
           return {
             role: msg.type === 'user' ? 'user' : 'assistant',
@@ -274,13 +253,7 @@ export function handleRunNodeCode() {
           }
         });
 
-        try {
-          await startMongoServer();
-          await replaceChatMessages(chatId, messages);
-          await stopMongoServer();
-        } catch (error) {
-          console.log('Error al guardar mensajes en la base de datos: ', error);
-        }
+        await replaceChatMessages(chatId, messages);
 
         event.sender.send('onNodeCodeResponse', {
           func: 'sendMessage',
