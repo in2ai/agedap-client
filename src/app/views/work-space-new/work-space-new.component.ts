@@ -50,7 +50,7 @@ export class WorkSpaceNewComponent implements OnInit {
 
     this.workSpaceDocumentsForm = new FormGroup({
       cvZip: new FormControl(''),
-      urlRelay: new FormControl(''),
+      relayId: new FormControl(''),
     });
   }
 
@@ -67,6 +67,8 @@ export class WorkSpaceNewComponent implements OnInit {
       name: this.getWorkSpaceControl('name').value,
       description: this.getWorkSpaceControl('description').value,
       type: this.getWorkSpaceControl('type').value,
+      relayId: this.workSpaceDocumentsForm.get('relayId')?.value,
+      documents: this.workSpaceDocumentsForm.get('cvZip')?.value,
       numChats: 0,
     };
 

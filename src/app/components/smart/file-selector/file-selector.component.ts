@@ -30,9 +30,9 @@ export class FileSelectorComponent {
         name: 'All Files',
         extensions: ['zip'],
       });
-      this.fileName = response.fileName;
-      this.filePath = response.filePath;
-      this.control.setValue(this.filePath);
+      console.log('response: ', response);
+      const { filePaths } = response;
+      this.control.setValue(filePaths);
     } catch (error) {
       console.log(error);
     }

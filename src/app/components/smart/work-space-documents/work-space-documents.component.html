@@ -5,10 +5,14 @@
     </legend>
     <div *ngIf="selectedWorkSpaceType === 'workOffers'">
       <div class="flex flex-col gap-4">
-        <app-file-selector label="CV" placeholder="Escoger CV (.zip)..." />
+        <app-file-selector
+          label="CV"
+          placeholder="Escoger CV (.zip)..."
+          [control]="getControl('cvZip')"
+        />
         <app-field
           label="Relay"
-          [control]="getControl('urlRelay')"
+          [control]="getControl('relayId')"
           [placeholder]="'Entrar url relay'"
         />
       </div>

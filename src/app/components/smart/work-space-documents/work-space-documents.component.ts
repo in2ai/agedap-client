@@ -37,7 +37,7 @@ export class WorkSpaceDocumentsComponent {
   initWorkOffersType() {
     this.formGroup = new FormGroup({
       cvZip: new FormControl(''),
-      urlRelay: new FormControl(''),
+      relayId: new FormControl(''),
     });
     console.log('INITIALIZED WORK OFFERS TYPE:', this.formGroup.value);
   }

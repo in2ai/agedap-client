@@ -7,6 +7,8 @@ export interface WorkSpace {
   type: workSpaceTypeEnum.WORKOFFERS | workSpaceTypeEnum.MISCELLANEOUS;
   name: string;
   description?: string;
+  documents?: string;
+  relayId?: string;
   createdAt?: string; // UTC ISO string
   updatedAt?: string; // UTC ISO string
   numChats?: number;
