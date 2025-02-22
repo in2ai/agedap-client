@@ -11,7 +11,6 @@ export class WorkSpaceService {
         func: 'newWorkspace',
         ...workSpace,
       });
-      console.log('response: ', response);
       const workspaceId = response.workspace.id;
       return workspaceId;
     } catch (error) {
@@ -26,6 +25,7 @@ export class WorkSpaceService {
         page: 0,
         limit: 10,
       });
+      console.log('response: ', response);
       const recoveredWorkSpaces: WorkSpace[] =
         response.workspaces?.map((ws: any) => {
           return {

@@ -157,7 +157,7 @@ export class WorkSpaceDetailComponent implements OnInit {
   showConfiguration = false;
   workSpaceDocumentsForm: FormGroup = new FormGroup({
     cvZip: new FormControl(''),
-    urlRelay: new FormControl(''),
+    relayId: new FormControl(''),
   });
   onToggleConfiguration(): void {
     this.showConfiguration = !this.showConfiguration;
