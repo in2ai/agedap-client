@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FileService } from 'src/app/service/file.service';
 import { ButtonComponent } from '../../ui/button/button.component';
 
 @Component({
@@ -23,15 +24,11 @@ export class FileSelectorComponent {
   @Input()
   control: FormControl = new FormControl('');
 
+  constructor(private fileService: FileService) {}
+
   async onClickFileSelector() {
     try {
-      const response = await (window as any).electronAPI.runNodeCode({
-        func: 'selectFile',
-        name: 'All Files',
-        extensions: ['zip'],
-      });
-      console.log('response: ', response);
-      const { filePaths } = response;
+      const filePaths = await this.fileService.selectFIle();
       this.control.setValue(filePaths);
     } catch (error) {
       console.log(error);
