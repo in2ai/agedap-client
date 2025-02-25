@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { Relay } from 'src/app/models';
+import { RelayService } from 'src/app/service/relay.service';
 import { FieldComponent } from '../field/field.component';
 import { FileSelectorComponent } from '../file-selector/file-selector.component';
 
@@ -10,8 +12,9 @@ import { FileSelectorComponent } from '../file-selector/file-selector.component'
   imports: [CommonModule, ReactiveFormsModule, FieldComponent, FileSelectorComponent],
   styles: [':host { width: 100%; }'],
 })
-export class WorkSpaceDocumentsComponent {
-  public selectedWorkSpaceType: string = '';
+export class WorkSpaceDocumentsComponent implements OnInit {
+  selectedWorkSpaceType: string = '';
+  availableRelays: Relay[] = [];
 
   @Input()
   formGroup!: FormGroup;
@@ -19,18 +22,20 @@ export class WorkSpaceDocumentsComponent {
   @Input()
   set workSpaceType(workspaceType: string) {
     this.selectedWorkSpaceType = workspaceType;
-    // switch (workspaceType) {
-    //   case 'workOffers':
-    //     this.initWorkOffersType();
-    //     break;
+  }
 
-    //   case 'miscellaneous':
-    //     this.initMiscellaneousType();
-    //     break;
+  constructor(private relayService: RelayService) {}
 
-    //   default:
-    //     break;
-    // }
+  ngOnInit(): void {
+    this.recoverRelays();
+  }
+
+  async recoverRelays() {
+    try {
+      this.availableRelays = await this.relayService.getRelays();
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   initWorkOffersType() {

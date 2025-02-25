@@ -15,6 +15,7 @@
           [control]="getControl('relayId')"
           [placeholder]="'Entrar url relay'"
         />
+        <h1 *ngIf="availableRelays[0]">{{ availableRelays[0].url }}</h1>
       </div>
     </div>
     <div *ngIf="selectedWorkSpaceType === 'miscellaneous'">
