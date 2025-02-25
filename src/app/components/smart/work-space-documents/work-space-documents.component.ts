@@ -3,18 +3,19 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Relay } from 'src/app/models';
 import { RelayService } from 'src/app/service/relay.service';
-import { FieldComponent } from '../field/field.component';
 import { FileSelectorComponent } from '../file-selector/file-selector.component';
+import { SelectComponent, SelectOption } from '../select/select.component';
 
 @Component({
   selector: 'app-work-space-documents',
   templateUrl: './work-space-documents.component.html',
-  imports: [CommonModule, ReactiveFormsModule, FieldComponent, FileSelectorComponent],
+  imports: [CommonModule, ReactiveFormsModule, FileSelectorComponent, SelectComponent],
   styles: [':host { width: 100%; }'],
 })
 export class WorkSpaceDocumentsComponent implements OnInit {
   selectedWorkSpaceType: string = '';
   availableRelays: Relay[] = [];
+  availableRelaysOptions: SelectOption[] = [];
 
   @Input()
   formGroup!: FormGroup;
@@ -33,6 +34,9 @@ export class WorkSpaceDocumentsComponent implements OnInit {
   async recoverRelays() {
     try {
       this.availableRelays = await this.relayService.getRelays();
+      this.availableRelaysOptions = this.availableRelays.map((relay) => {
+        return { value: relay.url, label: relay.name };
+      });
     } catch (error) {
       console.log(error);
     }

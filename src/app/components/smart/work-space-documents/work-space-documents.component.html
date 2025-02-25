@@ -10,12 +10,11 @@
           placeholder="Escoger CV (.zip)..."
           [control]="getControl('cvZip')"
         />
-        <app-field
+        <app-select
           label="Relay"
           [control]="getControl('relayId')"
-          [placeholder]="'Entrar url relay'"
+          [options]="availableRelaysOptions"
         />
-        <h1 *ngIf="availableRelays[0]">{{ availableRelays[0].url }}</h1>
       </div>
     </div>
     <div *ngIf="selectedWorkSpaceType === 'miscellaneous'">
