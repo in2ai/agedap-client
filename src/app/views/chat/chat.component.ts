@@ -129,7 +129,7 @@ export class ChatComponent implements OnInit {
         console.log('//Messages: ', this.messages);
         this.changeDetector.detectChanges();
         this.chatRef.nativeElement.scrollTop = this.chatRef.nativeElement.scrollHeight;
-      } else if (data.func === 'stop_generating_response' && data.chat_id === this.chatId) {
+      } else if (data.func === 'stopGeneratingResponse' && data.chatId === this.chatId) {
         console.log('Stopped generating response');
         this.generatingResponse = false;
         this.form.get('message')?.enable();
