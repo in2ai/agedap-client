@@ -72,10 +72,11 @@
                 />
               </div>
             </header>
-            <main class="flex flex-1">
+            <main class="flex flex-1 workSpaceDetailChats">
               <ag-grid-angular
                 style="width: 100%; height: 100%"
                 [rowData]="chats"
+                [rowClass]="['bg-red']"
                 [columnDefs]="colDefs"
                 [defaultColDef]="defaultColDef"
                 (cellClicked)="onCellClicked($event)"
