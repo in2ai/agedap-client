@@ -10,7 +10,7 @@ import { ChatService } from 'src/app/service/chat.service';
 import { ButtonComponent } from '../../components/ui/button/button.component';
 
 type Message = {
-  type: 'user' | 'model';
+  type: 'user' | 'model' | 'system' | 'external';
   message: string;
 };
 
@@ -97,6 +97,13 @@ export class ChatComponent implements OnInit {
         func: 'loadChat',
         chatId: this.chatId,
       });
+      //Pintar mensajes
+      if (response.messages.length > 0) {
+        this.messages = response.messages;
+        this.changeDetector.detectChanges();
+        this.chatRef.nativeElement.scrollTop = this.chatRef.nativeElement.scrollHeight;
+      }
+
       console.log('//RESPONSE LOAD CHAT: ', response);
       this.activateChat();
     } catch (error) {
@@ -107,7 +114,7 @@ export class ChatComponent implements OnInit {
   activateChat() {
     console.log('//4- ACTIVATE CHAT');
     (window as any).electronAPI.onPartialMessageResponse((event: any, data: any) => {
-      if (data.func === 'partial-response' && data.chat_id === this.chatId) {
+      if (data.func === 'onPartialMessageResponse' && data.chatId === this.chatId) {
         const newContent = data.content;
         //if last message is from model, update it else add new message
         if (this.messages.length > 0) {
@@ -122,10 +129,20 @@ export class ChatComponent implements OnInit {
         console.log('//Messages: ', this.messages);
         this.changeDetector.detectChanges();
         this.chatRef.nativeElement.scrollTop = this.chatRef.nativeElement.scrollHeight;
-      } else if (data.func === 'stop_generating_response' && data.chat_id === this.chatId) {
+      } else if (data.func === 'stopGeneratingResponse' && data.chatId === this.chatId) {
         console.log('Stopped generating response');
         this.generatingResponse = false;
         this.form.get('message')?.enable();
+      }
+    });
+
+    (window as any).electronAPI.onNewExternalMessage((event: any, data: any) => {
+      console.log('//NEW EXTERNAL MESSAGE: ', data);
+      if (data.func === 'onNewExternalMessage' && data.chatId === this.chatId) {
+        const { content } = data;
+        this.messages.push({ type: 'external', message: content });
+        this.changeDetector.detectChanges();
+        this.chatRef.nativeElement.scrollTop = this.chatRef.nativeElement.scrollHeight;
       }
     });
   }
@@ -142,13 +159,16 @@ export class ChatComponent implements OnInit {
 
     try {
       this.generatingResponse = true;
-      const response = await (window as any).electronAPI.runNodeCode({
+      await (window as any).electronAPI.runNodeCode({
         func: 'sendMessage',
         message: message,
         chatId: this.chatId,
       });
 
-      this.messages = response.messages;
+      /*
+      ya viene en partialMessageResponse
+      const responseMessage = response.content;
+      this.messages.push({ type: 'model', message: responseMessage });*/
       this.changeDetector.detectChanges();
       this.chatRef.nativeElement.scrollTop = this.chatRef.nativeElement.scrollHeight;
     } catch (error) {
@@ -171,7 +191,11 @@ export class ChatComponent implements OnInit {
   }
 
   // Interface
-  onBackToWorkspaceHandler() {
+  async onBackToWorkspaceHandler() {
+    await (window as any).electronAPI.runNodeCode({
+      func: 'unloadChat',
+      chatId: this.chatId,
+    });
     this.router.navigate([`/workspace/${this.chat.workspaceId}`]);
   }
 }

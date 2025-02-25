@@ -1,11 +1,13 @@
 import { ipcMain } from 'electron';
 import { dialog } from 'electron';
-import { app, loadModel, modelPath } from './langchain.mjs';
-import { HumanMessage } from '@langchain/core/messages';
+import { app, changePromptTemplate, loadModel, modelPath } from './langchain.mjs';
+import { AIMessage, HumanMessage, SystemMessage } from '@langchain/core/messages';
 import {
+  addChatMessage,
   deleteChat,
   deleteWorkspace,
   getChat,
+  getChatMessages,
   getChats,
   getWorkspace,
   getWorkspaces,
@@ -13,6 +15,8 @@ import {
   newWorkspace,
   replaceChatMessages,
 } from './db.mjs';
+import { RELAY_LIST } from './relays.mjs';
+import { startChatService, stopChatService } from './service/index.mjs';
 const controllers = new Map();
 
 export function handleRunNodeCode() {
@@ -170,50 +174,59 @@ export function handleRunNodeCode() {
       case 'loadChat': {
         const { chatId } = data;
         const chat = await getChat(chatId);
-        const loadedMessages =
-          chat.messages?.map((msg) => {
-            return {
-              role: msg.type === 'user' ? 'user' : 'assistant',
-              message: msg.content,
-            };
-          }) ?? [];
-
-        const config = { configurable: { thread_id: chatId } };
-        const input = { loadedMessages };
-        const response = await app.invoke(input, config);
-
-        let messages = [];
-        response.messages.forEach((msg) => {
-          if (msg instanceof HumanMessage) {
-            messages.push({
-              type: 'user',
-              message: msg.content,
-            });
-          } else {
-            messages.push({
-              type: 'model',
-              message: msg.content,
-            });
+        const workspace = await getWorkspace(chat.workspaceId);
+        switch (workspace.type) {
+          case 'workOffers': {
+            changePromptTemplate(
+              'Eres un asistente de ofertas de trabajo. El usuario te va mandar los datos de su curriculum y las ofertas de trabajo disponibles que ya se han filtrado por su perfil y deberían ser de su interés.'
+            );
+            break;
           }
-        });
+          default: {
+            changePromptTemplate('Eres un asistente amable. Puedes usar markdown para responder.');
+            break;
+          }
+        }
+
+        const loadedMessages = chat.messages || [];
 
         event.sender.send('onNodeCodeResponse', {
           func: 'loadChat',
           chatId,
-          messages,
+          messages: loadedMessages,
+        });
+
+        startChatService(event, chat);
+        break;
+      }
+
+      case 'unloadChat': {
+        const { chatId } = data;
+        stopChatService();
+        event.sender.send('onNodeCodeResponse', {
+          func: 'unloadChat',
+          chatId,
         });
         break;
       }
 
       case 'sendMessage': {
         const { chatId, message } = data;
+        let chatMessages = await getChatMessages(chatId);
+        const chatHistory = [];
+        chatMessages.forEach((msg) => {
+          if (msg.type === 'user' || msg.type === 'external') {
+            chatHistory.push(new HumanMessage(msg.message));
+          } else if (msg.type === 'model') {
+            chatHistory.push(new AIMessage(msg.message));
+          } else {
+            chatHistory.push(new SystemMessage(msg.message));
+          }
+        });
+
+        await addChatMessage(chatId, message, 'user');
         const input = {
-          messages: [
-            {
-              role: 'user',
-              content: message,
-            },
-          ],
+          messages: [...chatHistory, new HumanMessage(message)],
         };
 
         const controller = new AbortController();
@@ -239,28 +252,14 @@ export function handleRunNodeCode() {
         };
 
         const response = await app.invoke(input, config);
+        const responseMessage = response.messages[response.messages.length - 1].content;
 
-        let messages = [];
-        response.messages.forEach((msg) => {
-          if (msg instanceof HumanMessage) {
-            messages.push({
-              type: 'user',
-              message: msg.content,
-            });
-          } else {
-            messages.push({
-              type: 'model',
-              message: msg.content,
-            });
-          }
-        });
-
-        await replaceChatMessages(chatId, messages);
+        await addChatMessage(chatId, responseMessage, 'model');
 
         event.sender.send('onNodeCodeResponse', {
           func: 'sendMessage',
           chatId,
-          messages,
+          content: responseMessage,
         });
         break;
       }
