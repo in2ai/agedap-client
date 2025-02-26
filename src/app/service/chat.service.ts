@@ -5,14 +5,14 @@ import { Chat } from '../models';
   providedIn: 'root',
 })
 export class ChatService {
-  async createChat(chat: Chat): Promise<Chat> {
+  async createChat(chat: Chat): Promise<string> {
     try {
       const response = await (window as any).electronAPI.runNodeCode({
         func: 'newChat',
         ...chat,
       });
-      const id = response.chat.id;
-      return id;
+      const chatId = response.chat.id;
+      return chatId;
     } catch (error) {
       throw new Error(`Error creating chat : ${error}`);
     }

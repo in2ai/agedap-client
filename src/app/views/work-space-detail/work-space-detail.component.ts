@@ -119,7 +119,8 @@ export class WorkSpaceDetailComponent implements OnInit {
   async createNewChat(chat: Chat) {
     this.hideNewChatCreation();
     try {
-      await this.chatService.createChat(chat);
+      const createdChatId = await this.chatService.createChat(chat);
+      this.chatId = createdChatId;
       // TODO: navigate to chat
       this.recoverChats();
     } catch (error) {
