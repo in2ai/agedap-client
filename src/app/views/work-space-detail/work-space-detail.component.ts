@@ -20,6 +20,7 @@ import { ChatService } from 'src/app/service/chat.service';
 import { ModalService } from 'src/app/service/modal.service';
 import { NewChatCreationComponent } from '../../components/smart/new-chat-creation/new-chat-creation.component';
 import { ButtonComponent } from '../../components/ui/button/button.component';
+import { ChatComponent } from '../chat/chat.component';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -36,6 +37,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
     ButtonComponent,
     TranslateModule,
     NewChatCreationComponent,
+    ChatComponent,
   ],
 })
 export class WorkSpaceDetailComponent implements OnInit {
@@ -110,14 +112,15 @@ export class WorkSpaceDetailComponent implements OnInit {
       return this.removeChat(chatSelected);
     }
 
-    return this.router.navigate([`/workspace/${this.workSpaceId}/chat/${chatSelected.id}`]);
+    this.chatId = chatSelected.id ?? '';
   };
 
   // WorkSpace component methods
   async createNewChat(chat: Chat) {
     this.hideNewChatCreation();
     try {
-      await this.chatService.createChat(chat);
+      const createdChatId = await this.chatService.createChat(chat);
+      this.chatId = createdChatId;
       // TODO: navigate to chat
       this.recoverChats();
     } catch (error) {
