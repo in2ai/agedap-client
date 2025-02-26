@@ -67,7 +67,7 @@ export class WorkSpaceNewComponent implements OnInit {
       documents: [
         {
           type: 'linkedin',
-          path: this.workSpaceDocumentsForm.get('cvZip')?.value,
+          path: this.workSpaceDocumentsForm.get('cvZip')?.value[0],
         },
       ],
     };

@@ -22,7 +22,6 @@ const controllers = new Map();
 export function handleRunNodeCode() {
   ipcMain.on('runNodeCode', async (event, data) => {
     const { func } = data;
-    console.log('runNodeCode', func);
 
     // TODO group related funciontions in external modules
     // and here just call the functions
@@ -290,7 +289,5 @@ export function handleRunNodeCode() {
         event.sender.send('onNodeCodeResponse', 'Función no encontrada');
       }
     }
-
-    console.log('END runNodeCode', func);
   });
 }
