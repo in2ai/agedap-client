@@ -1,4 +1,4 @@
-import { CommonModule, NgFor } from '@angular/common';
+import { CommonModule, DatePipe, NgFor } from '@angular/common';
 import {
   ChangeDetectorRef,
   Component,
@@ -17,8 +17,11 @@ import { Chat } from 'src/app/models';
 import { ChatService } from 'src/app/service/chat.service';
 
 type Message = {
+  id?: string;
   type: 'user' | 'model' | 'system' | 'external';
   message: string;
+  createdAt?: string; // ISO string UTC
+  updatedAt?: string; // ISO string UTC
 };
 
 @Component({
@@ -32,6 +35,7 @@ type Message = {
     ReactiveFormsModule,
     ButtonModule,
     TranslateModule,
+    DatePipe,
   ],
 })
 export class ChatComponent implements OnInit {
@@ -60,7 +64,6 @@ export class ChatComponent implements OnInit {
 
   async ngOnInit() {
     // Recover chat data
-    console.log('chatId', this.chatId);
     try {
       this.chat = await this.chatService.getChat(this.chatId);
 
