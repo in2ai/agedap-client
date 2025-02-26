@@ -10,10 +10,10 @@
           placeholder="Escoger CV (.zip)..."
           [control]="getControl('cvZip')"
         />
-        <app-field
+        <app-select
           label="Relay"
           [control]="getControl('relayId')"
-          [placeholder]="'Entrar url relay'"
+          [options]="availableRelaysOptions"
         />
       </div>
     </div>

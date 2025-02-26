@@ -75,17 +75,19 @@ export class WorkSpaceDetailComponent implements OnInit {
   // Table configutation
   public workSpaces: WorkSpace[] = [];
   public colDefs: ColDef<Chat>[] = [
-    { field: 'name', headerName: 'Nombre' },
-    { field: 'description', headerName: 'Descripción' },
+    { field: 'name', headerName: 'Nombre', resizable: false },
+    { field: 'description', headerName: 'Descripción', resizable: false },
     {
       field: 'createdAt',
       headerName: 'Creado el',
       valueFormatter: (params) => isoStringToddMMYYYYhhmmss(params.value),
+      resizable: false,
     },
     {
       field: 'updatedAt',
       headerName: 'Actualizado el',
       valueFormatter: (params) => isoStringToddMMYYYYhhmmss(params.value),
+      resizable: false,
     },
     {
       colId: 'removeAction',
@@ -94,6 +96,7 @@ export class WorkSpaceDetailComponent implements OnInit {
       pinned: 'right',
       width: 100,
       cellRenderer: WorkSpaceDeleteRendererComponent,
+      resizable: false,
     },
   ];
   public defaultColDef: ColDef = {

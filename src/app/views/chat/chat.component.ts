@@ -51,7 +51,6 @@ export class ChatComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    console.log('//1- ON INIT CHAT');
     this.chatId = this.activatedRoute.snapshot.params['chatId'] ?? '';
 
     // Recover chat data
@@ -71,7 +70,6 @@ export class ChatComponent implements OnInit {
   }
 
   async checkModel() {
-    console.log('//2- CHECK MODEL STATE');
     try {
       const response = await (window as any).electronAPI.runNodeCode({
         func: 'state',
@@ -91,7 +89,6 @@ export class ChatComponent implements OnInit {
   }
 
   async loadChat() {
-    console.log('//3- LOAD CHAT');
     try {
       const response = await (window as any).electronAPI.runNodeCode({
         func: 'loadChat',
@@ -104,7 +101,6 @@ export class ChatComponent implements OnInit {
         this.chatRef.nativeElement.scrollTop = this.chatRef.nativeElement.scrollHeight;
       }
 
-      console.log('//RESPONSE LOAD CHAT: ', response);
       this.activateChat();
     } catch (error) {
       console.log(`//Error loading chat: ${error}`);
@@ -112,7 +108,6 @@ export class ChatComponent implements OnInit {
   }
 
   activateChat() {
-    console.log('//4- ACTIVATE CHAT');
     (window as any).electronAPI.onPartialMessageResponse((event: any, data: any) => {
       if (data.func === 'onPartialMessageResponse' && data.chatId === this.chatId) {
         const newContent = data.content;
@@ -126,18 +121,15 @@ export class ChatComponent implements OnInit {
         } else {
           this.messages.push({ type: 'model', message: newContent });
         }
-        console.log('//Messages: ', this.messages);
         this.changeDetector.detectChanges();
         this.chatRef.nativeElement.scrollTop = this.chatRef.nativeElement.scrollHeight;
       } else if (data.func === 'stopGeneratingResponse' && data.chatId === this.chatId) {
-        console.log('Stopped generating response');
         this.generatingResponse = false;
         this.form.get('message')?.enable();
       }
     });
 
     (window as any).electronAPI.onNewExternalMessage((event: any, data: any) => {
-      console.log('//NEW EXTERNAL MESSAGE: ', data);
       if (data.func === 'onNewExternalMessage' && data.chatId === this.chatId) {
         const { content } = data;
         this.messages.push({ type: 'external', message: content });

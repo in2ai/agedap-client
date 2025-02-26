@@ -28,7 +28,7 @@ export function handleRunNodeCode() {
     switch (func) {
       //App
       case 'test': {
-        event.sender.send('onNodeCodeResponse', {
+        event.sender.send('onNodeCodeResponse_test', {
           func: 'test',
           message: 'Función test ejecutada',
         });
@@ -38,7 +38,7 @@ export function handleRunNodeCode() {
         const state = {
           modelPath: modelPath,
         };
-        event.sender.send('onNodeCodeResponse', {
+        event.sender.send('onNodeCodeResponse_state', {
           func: 'state',
           ...state,
         });
@@ -62,7 +62,7 @@ export function handleRunNodeCode() {
           modelName = modelName.split('\\').pop() || '';
           modelName = modelName.split('/').pop() || '';
           await loadModel(modelPath);
-          event.sender.send('onNodeCodeResponse', {
+          event.sender.send('onNodeCodeResponse_selectModel', {
             func: 'selectModel',
             modelName,
             modelPath,
@@ -78,7 +78,7 @@ export function handleRunNodeCode() {
         });
         const { filePaths } = dialogResult;
 
-        event.sender.send('onNodeCodeResponse', {
+        event.sender.send('onNodeCodeResponse_selectFile', {
           func: 'selectFile',
           filePaths,
         });
@@ -87,7 +87,7 @@ export function handleRunNodeCode() {
 
       //Relays
       case 'getRelays': {
-        event.sender.send('onNodeCodeResponse', {
+        event.sender.send('onNodeCodeResponse_getRelays', {
           func: 'getRelays',
           relays: RELAY_LIST,
         });
@@ -98,7 +98,7 @@ export function handleRunNodeCode() {
       case 'newWorkspace': {
         const { type, name, description, documents, relayId } = data;
         const workspace = await newWorkspace(type, name, description, documents, relayId);
-        event.sender.send('onNodeCodeResponse', {
+        event.sender.send('onNodeCodeResponse_newWorkspace', {
           func: 'newWorkspace',
           workspace,
         });
@@ -107,7 +107,7 @@ export function handleRunNodeCode() {
       case 'getWorkspaces': {
         const { page, limit } = data;
         const workspaces = await getWorkspaces(page, limit);
-        event.sender.send('onNodeCodeResponse', {
+        event.sender.send('onNodeCodeResponse_getWorkspaces', {
           func: 'getWorkspaces',
           workspaces,
         });
@@ -116,7 +116,7 @@ export function handleRunNodeCode() {
       case 'getWorkspace': {
         const { workspaceId } = data;
         const workspace = await getWorkspace(workspaceId);
-        event.sender.send('onNodeCodeResponse', {
+        event.sender.send('onNodeCodeResponse_getWorkspace', {
           func: 'getWorkspace',
           workspace,
         });
@@ -125,7 +125,7 @@ export function handleRunNodeCode() {
       case 'deleteWorkspace': {
         const { workspaceId } = data;
         await deleteWorkspace(workspaceId);
-        event.sender.send('onNodeCodeResponse', {
+        event.sender.send('onNodeCodeResponse_deleteWorkspace', {
           func: 'deleteWorkspace',
           workspaceId,
         });
@@ -136,7 +136,7 @@ export function handleRunNodeCode() {
       case 'newChat': {
         const { workspaceId, name, description } = data;
         const chat = await newChat(workspaceId, name, description);
-        event.sender.send('onNodeCodeResponse', {
+        event.sender.send('onNodeCodeResponse_newChat', {
           func: 'newChat',
           chat,
         });
@@ -145,7 +145,7 @@ export function handleRunNodeCode() {
       case 'getChats': {
         const { workspaceId } = data;
         const chats = await getChats(workspaceId);
-        event.sender.send('onNodeCodeResponse', {
+        event.sender.send('onNodeCodeResponse_getChats', {
           func: 'getChats',
           chats,
         });
@@ -154,7 +154,7 @@ export function handleRunNodeCode() {
       case 'getChat': {
         const { chatId } = data;
         const chat = await getChat(chatId);
-        event.sender.send('onNodeCodeResponse', {
+        event.sender.send('onNodeCodeResponse_getChat', {
           func: 'getChat',
           chat,
         });
@@ -163,7 +163,7 @@ export function handleRunNodeCode() {
       case 'deleteChat': {
         const { chatId } = data;
         await deleteChat(chatId);
-        event.sender.send('onNodeCodeResponse', {
+        event.sender.send('onNodeCodeResponse_deleteChat', {
           func: 'deleteChat',
           chatId,
         });
@@ -190,7 +190,7 @@ export function handleRunNodeCode() {
 
         const loadedMessages = chat.messages || [];
 
-        event.sender.send('onNodeCodeResponse', {
+        event.sender.send('onNodeCodeResponse_loadChat', {
           func: 'loadChat',
           chatId,
           messages: loadedMessages,
@@ -203,7 +203,7 @@ export function handleRunNodeCode() {
       case 'unloadChat': {
         const { chatId } = data;
         stopChatService();
-        event.sender.send('onNodeCodeResponse', {
+        event.sender.send('onNodeCodeResponse_unloadChat', {
           func: 'unloadChat',
           chatId,
         });
@@ -256,7 +256,7 @@ export function handleRunNodeCode() {
 
         await addChatMessage(chatId, responseMessage, 'model');
 
-        event.sender.send('onNodeCodeResponse', {
+        event.sender.send('onNodeCodeResponse_sendMessage', {
           func: 'sendMessage',
           chatId,
           content: responseMessage,
@@ -273,13 +273,13 @@ export function handleRunNodeCode() {
           console.log('Controller: ', controller);
           controller.abort();
 
-          event.sender.send('onNodeCodeResponse', {
+          event.sender.send('onNodeCodeResponse_stopGeneratingResponse', {
             func: 'stopGeneratingResponse',
             chatId,
           });
         } catch (error) {
           event.sender.send(
-            'onNodeCodeResponse',
+            'onNodeCodeResponse_stopGeneratingResponse',
             `Error al detener generación de respuesta: ${error.message}`
           );
         }

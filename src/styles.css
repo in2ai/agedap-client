@@ -54,14 +54,31 @@ markdown {
 }
 
 .ag-body,
-.ag-viewport {
-  background-color: var(--color-slate-300);
-}
-
+.ag-viewport,
 .ag-row-even {
   background-color: var(--color-slate-300);
 }
 
 .ag-row-odd {
   background-color: var(--color-slate-200);
+}
+
+/* workSpaceDetailChats table */
+.workSpaceDetailChats .ag-root-wrapper,
+.workSpaceDetailChats .ag-header,
+.workSpaceDetailChats .ag-body,
+.workSpaceDetailChats .ag-viewport,
+.workSpaceDetailChats .ag-row-even,
+.workSpaceDetailChats .ag-row-odd {
+  background-color: transparent;
+  color: var(--color-slate-500);
+}
+
+.workSpaceDetailChats .ag-root-wrapper {
+  border-radius: unset;
+}
+
+.workSpaceDetailChats .ag-header {
+  font-weight: 600;
+  background-color: var(--color-slate-300);
 }
