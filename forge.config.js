@@ -7,7 +7,9 @@ module.exports = {
       unpack: [
         '**/node_modules/@node-llama-cpp/**',
         '**/node_modules/@huggingface/**',
-        'DirectML.dll',
+        '**/node_modules/onnxruntime-common/**',
+        '**/node_modules/onnxruntime-node/**',
+        '**/node_modules/onnxruntime-web/**',
       ],
     },
   },
