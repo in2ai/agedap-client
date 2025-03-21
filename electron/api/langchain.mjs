@@ -28,15 +28,44 @@ export const loadModel = async (config) => {
   });
 };
 
+/*let placeholder = `{{- bos_token }}
+{%- set date_string = strftime_now('%d %b %Y') %}
+
+{#- This block extracts the system message, so we can slot it into the right place. #}
+{%- if messages[0]['role'] == 'system' %}
+    {%- set system_message = messages[0]['content'] | trim %}
+    {%- set loop_start = 1 %}
+{%- else %}
+    {%- set system_message = '' %}
+    {%- set loop_start = 0 %}
+{%- endif %}
+
+{#- System message #}
+{{- '<|start_header_id|>system<|end_header_id|>\n\n' }}
+{{- 'Cutting Knowledge Date: December 2023\n' }}
+{{- 'Today Date: ' + date_string + '\n\n' }}
+{{- system_message }}
+{{- '<|eot_id|>' }}
+
+{%- for message in messages %}
+    {%- if loop.index0 >= loop_start %}
+        {{- '<|start_header_id|>' + message['role'] + '<|end_header_id|>\n\n' + message['content'] | trim + '<|eot_id|>' }}
+    {%- endif %}
+{%- endfor %}
+{%- if add_generation_prompt %}
+    {{- '<|start_header_id|>assistant<|end_header_id|>\n\n' }}
+{%- endif %}`;*/
+const placeholder = `{messages}`;
+
 let promptTemplate = ChatPromptTemplate.fromMessages([
-  ['system', 'Eres un asistente amable. Puedes usar markdown para responder.'],
-  ['placeholder', '{messages}'],
+  ['system', 'Eres un asistente amable. Responde siempre de manera concisa.'],
+  ['placeholder', placeholder],
 ]);
 
 export const changePromptTemplate = async (prompt) => {
   promptTemplate = ChatPromptTemplate.fromMessages([
     ['system', prompt],
-    ['placeholder', '{messages}'],
+    ['placeholder', placeholder],
   ]);
 };
 
@@ -49,6 +78,8 @@ const callModel = async (state) => {
     if (model._context.sequencesLeft === 0) {
       model._context = await model._model.createContext({
         contextSize: configuration.contextSize || 1024,
+        batchSize: configuration.batchSize || 128,
+        threads: configuration.threads || 4,
       });
     }
 

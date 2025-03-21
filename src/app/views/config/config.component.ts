@@ -17,25 +17,14 @@ export class ConfigComponent implements OnInit {
   public modelName?: string;
   public isSelectingModel?: boolean;
   public config: string = `{
-    "batchSize": null,
-    "contextSize": 1024,
-    "embedding": null,
-    "f16Kv": null,
-    "gpuLayers": 0,
-    "logitsAll": null,
-    "maxTokens": 1024,
-    "prependBos": null,
-    "seed": null,
-    "temperature": null,
-    "threads": null,
-    "trimWhitespaceSuffix": null,
-    "topK": null,
-    "topP": null,
-    "useMlock": null,
-    "useMmap": null,
-    "vocabOnly": null,
-    "jsonSchema": null,
-    "gbnf": null
+    "batchSize": 128,
+    "contextSize": 4096,
+    "gpuLayers": 1,
+    "maxTokens": 2048,
+    "temperature": 0.7,
+    "threads": 4,
+    "topK": 40,
+    "topP": 0.4
 }`;
 
   async ngOnInit() {

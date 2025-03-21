@@ -190,7 +190,7 @@ export function handleRunNodeCode() {
             break;
           }
           default: {
-            changePromptTemplate('Eres un asistente amable. Puedes usar markdown para responder.');
+            changePromptTemplate('Eres un asistente amable. Responde siempre de manera concisa.');
             break;
           }
         }
