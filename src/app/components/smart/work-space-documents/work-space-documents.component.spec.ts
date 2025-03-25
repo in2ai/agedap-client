@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
+import { FormGroup } from '@angular/forms';
 import { WorkSpaceDocumentsComponent } from './work-space-documents.component';
 
 describe('WorkSpaceDocumentsComponent', () => {
@@ -8,12 +9,12 @@ describe('WorkSpaceDocumentsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [WorkSpaceDocumentsComponent]
-    })
-    .compileComponents();
+      imports: [WorkSpaceDocumentsComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(WorkSpaceDocumentsComponent);
     component = fixture.componentInstance;
+    component.formGroup = new FormGroup({});
     fixture.detectChanges();
   });
 

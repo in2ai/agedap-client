@@ -8,9 +8,8 @@ describe('WorkSpaceTypeRendererComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [WorkSpaceTypeRendererComponent]
-    })
-    .compileComponents();
+      imports: [WorkSpaceTypeRendererComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(WorkSpaceTypeRendererComponent);
     component = fixture.componentInstance;

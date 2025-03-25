@@ -8,9 +8,8 @@ describe('WorkSpaceDeleteRendererComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [WorkSpaceDeleteRendererComponent]
-    })
-    .compileComponents();
+      imports: [WorkSpaceDeleteRendererComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(WorkSpaceDeleteRendererComponent);
     component = fixture.componentInstance;

@@ -7,7 +7,7 @@ describe('NavLinkComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [NavLinkComponent],
+      imports: [NavLinkComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(NavLinkComponent);
