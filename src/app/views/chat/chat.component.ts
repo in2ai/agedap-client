@@ -5,6 +5,7 @@ import {
   ElementRef,
   inject,
   Input,
+  OnDestroy,
   OnInit,
   ViewChild,
 } from '@angular/core';
@@ -38,7 +39,7 @@ type Message = {
     DatePipe,
   ],
 })
-export class ChatComponent implements OnInit {
+export class ChatComponent implements OnInit, OnDestroy {
   router = inject(Router);
   activatedRoute = inject(ActivatedRoute);
 
@@ -77,6 +78,14 @@ export class ChatComponent implements OnInit {
     } catch (error) {
       console.log(`//Error recovering chat info: ${error}`);
     }
+  }
+
+  ngOnDestroy(): void {
+    console.log(`//Chat component destroyed`);
+    (window as any).electronAPI.runNodeCode({
+      func: 'unloadChat',
+      chatId: this.chatId,
+    });
   }
 
   async checkModel() {
