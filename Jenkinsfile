@@ -15,6 +15,23 @@ pipeline {
                     apt-get install -y nodejs
                     npm install -g @angular/cli@latest
                 '''
+
+                //Install chrome browser
+                sh '''#!/bin/bash
+                    set -x  # Enables debug mode
+
+                    apt-get update
+                    apt-get install -y wget unzip
+                    wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+                    dpkg -i google-chrome-stable_current_amd64.deb || true
+                    apt-get install -f -y
+                '''
+
+                // Set the CHROME_BIN environment variable to the path of the Chrome binary
+                script {
+                    env.CHROME_BIN = '/usr/bin/google-chrome'
+                    echo "CHROME_BIN set to ${env.CHROME_BIN}"
+                }
             }
         }
         stage('Build') {
