@@ -1,7 +1,9 @@
 pipeline {
     agent {
-        dockerfile true
-        args '-u root:root'  // Run as root user to install dependencies
+        docker {
+            image 'node:18.16.0'
+            args '-u root:root'
+        }
     }
     stages {
         stage('Build: Install dependencies') {
