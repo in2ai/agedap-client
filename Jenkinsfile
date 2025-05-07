@@ -41,7 +41,7 @@ pipeline {
                         echo "Running tests for branch ${env.BRANCH_NAME}"
                     }
                 }
-                sh 'npm run test -- --watch=false --bail --code-coverage'
+                sh 'ng test --code-coverage'
             }
         }
 
