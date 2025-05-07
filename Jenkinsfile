@@ -59,7 +59,7 @@ pipeline {
                         echo "Running tests for branch ${env.BRANCH_NAME}"
                     }
                 }
-                sh 'ng test --code-coverage'
+                sh 'ng test --code-coverage --watch=false --browsers=ChromeHeadless'
             }
         }
 

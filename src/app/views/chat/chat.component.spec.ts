@@ -1,13 +1,12 @@
+import { CommonModule, DatePipe } from '@angular/common';
 import { ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing';
-import { ChatComponent } from './chat.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MarkdownModule } from 'ngx-markdown';
 import { ButtonModule } from 'primeng/button';
 import { ChatService } from 'src/app/service/chat.service';
-import { CommonModule } from '@angular/common';
-import { DatePipe } from '@angular/common';
+import { ChatComponent } from './chat.component';
 
 // Mock de ChatService
 const mockChatService = {
@@ -91,7 +90,12 @@ describe('ChatComponent', () => {
     await component.ngOnInit();
     component.form.get('message')?.setValue('Hola mundo');
     fixture.detectChanges();
-
+    component.chatRef = {
+      nativeElement: {
+        scrollTop: 0,
+        scrollHeight: 1000,
+      },
+    } as any;
     await component.sendMessage();
 
     expect(component.messages.length).toBe(1);
