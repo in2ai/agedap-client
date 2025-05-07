@@ -26,7 +26,7 @@ pipeline {
                         echo "Building branch ${env.BRANCH_NAME}"
                     }
                 }
-                sh 'npm install'
+                sh 'npm install --force'
                 sh 'npm run build-pro'
             }
         }
