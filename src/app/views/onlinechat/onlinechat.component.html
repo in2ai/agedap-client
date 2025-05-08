@@ -1,0 +1,84 @@
+<div class="flex flex-col justify-between w-full h-full overflow-hidden">
+  <ng-container *ngIf="!isChatLoaded">
+    <div class="flex w-full h-full justify-center items-center">
+      <ng-container
+        ><div class="flex flex-row justify-center items-center">
+          <h1 class="text-xl">Cargando chat...</h1>
+        </div>
+      </ng-container>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="isChatLoaded" class="flex flex-col w-full h-full">
+    <header class="flex flex-none">
+      <div class="flex flex-row justify-start items-center pb-4">
+        <h1 class="text-lg font-semibold">
+          <i class="pi pi-comments pr-2"></i>
+          <span>Chats </span>
+        </h1>
+        <span class="pl-2 font-bold">| "{{ chat.name }}"</span>
+      </div>
+    </header>
+    <div #chatRef class="flex flex-1 flex-col overflow-y-auto pr-4">
+      <div
+        *ngFor="let message of messages"
+        [ngClass]="{
+          'justify-end': message.type === 'user',
+          'justify-start':
+            message.type === 'model' || message.type === 'system' || message.type === 'external',
+        }"
+        class="flex w-full mb-2"
+      >
+        <div
+          class="max-w-[80%] p-5 text-base/6 rounded-lg"
+          [ngClass]="{
+            'bg-chatUserMessageBg text-chatUserMessageText': message.type === 'user',
+            'bg-chatModelMessageBg text-chatModelMessageText':
+              message.type === 'model' || message.type === 'system' || message.type === 'external',
+            'rounded-br-none': message.type === 'user',
+            'rounded-bl-none':
+              message.type === 'model' || message.type === 'system' || message.type === 'external',
+          }"
+        >
+          <markdown [data]="message.message" class="text-md/6 block"></markdown>
+          <small
+            class="flex flex-row justify-end items-center text-xs w-full mt-5 italic text-slate-300 border-t border-dotted border-slate-400 pt-1"
+            [ngClass]="{
+              'text-slate-400': message.type === 'user',
+              'text-slate-300':
+                message.type === 'model' ||
+                message.type === 'system' ||
+                message.type === 'external',
+            }"
+          >
+            <span class="font-bold">{{ message.type === 'user' ? 'user' : 'model' }}</span>
+            <span *ngIf="message.createdAt"
+              ><span class="px-2">|</span> {{ message.createdAt | date: 'dd/MM/yyyy hh:mm' }}</span
+            ></small
+          >
+        </div>
+      </div>
+    </div>
+
+    <form
+      class="flex flex-row flex-none w-full gap-2 justify-between items-center mt-2"
+      [formGroup]="form"
+      (ngSubmit)="sendMessage()"
+    >
+      <input
+        pInputText
+        class="flex-1 p-2 border border-gray-300 focus:outline-none focus:ring focus:ring-blue-300"
+        type="text"
+        placeholder="Escribe un mensaje..."
+        formControlName="message"
+      />
+      <p-button
+        type="submit"
+        label="Enviar"
+        class="p-button-primary rounded-full"
+        icon="pi pi-send"
+        size="small"
+      ></p-button>
+    </form>
+  </ng-container>
+</div>

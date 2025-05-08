@@ -5,6 +5,7 @@ import { PageNotFoundComponent } from './views/page-not-found/page-not-found.com
 import { WorkSpaceDetailComponent } from './views/work-space-detail/work-space-detail.component';
 import { WorkSpaceNewComponent } from './views/work-space-new/work-space-new.component';
 import { WorkSpaceComponent } from './views/work-space/work-space.component';
+import { OnlineChatListComponent } from './views/onlinechat-list/onlinechat-list.component';
 
 export const routes: Routes = [
   {
@@ -31,6 +32,10 @@ export const routes: Routes = [
   {
     path: 'workspace/:workSpaceId/chat/:chatId',
     component: WorkSpaceDetailComponent,
+  },
+  {
+    path: 'onlinechat',
+    component: OnlineChatListComponent,
   },
   {
     path: '**',

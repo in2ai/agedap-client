@@ -7,6 +7,29 @@ const dbPath = path.resolve('db');
 if (!fs.existsSync(dbPath)) {
   fs.mkdirSync(dbPath);
 }
+
+//Online chats DB
+const onlineChatsDb = await JSONFilePreset(path.join(dbPath, 'onlineChats.json'), []);
+
+export async function getOnlineChats() {
+  await onlineChatsDb.read();
+  return onlineChatsDb.data;
+}
+
+export async function newOnlineChat(recipientId) {
+  const id = uuidv4();
+  const date = new Date();
+  const onlineChat = {
+    id,
+    recipientId,
+    createdAt: date,
+    updatedAt: date,
+  };
+  await onlineChatsDb.read();
+  await onlineChatsDb.update((data) => data.push(onlineChat));
+  return onlineChat;
+}
+
 //Config DB
 const configDb = await JSONFilePreset(path.join(dbPath, 'config.json'), {});
 

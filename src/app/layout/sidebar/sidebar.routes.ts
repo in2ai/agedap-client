@@ -10,6 +10,11 @@ export const APP_ROUTES: MainRouteInfo[] = [
         title: 'WORKSPACE.TITLE',
         icon: 'pi pi-desktop',
       },
+      {
+        path: '/onlinechat',
+        title: 'Conversaciones en línea',
+        icon: 'pi pi-comments',
+      },
     ],
   },
 ];
