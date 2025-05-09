@@ -12,9 +12,12 @@ import {
   getChats,
   getConfig,
   getConfigValue,
+  getOnlineChat,
+  getOnlineChats,
   getWorkspace,
   getWorkspaces,
   newChat,
+  newOnlineChat,
   newWorkspace,
   setConfig,
   setConfigValue,
@@ -54,9 +57,44 @@ export function handleRunNodeCode() {
         break;
       }
 
+      //Online chats
+      case 'getOnlineChats': {
+        const onlineChats = await getOnlineChats();
+        event.sender.send('onNodeCodeResponse_getOnlineChats', {
+          func: 'getOnlineChats',
+          onlineChats,
+        });
+        break;
+      }
+      case 'getOnlineChat': {
+        const { onlineChatId } = data;
+        const onlineChat = await getOnlineChat(onlineChatId);
+        event.sender.send('onNodeCodeResponse_getOnlineChat', {
+          func: 'getOnlineChat',
+          onlineChat,
+        });
+        break;
+      }
+      case 'newOnlineChat': {
+        const { authors, tags } = data;
+        const onlineChat = await newOnlineChat(authors, tags);
+        event.sender.send('onNodeCodeResponse_newOnlineChat', {
+          func: 'newOnlineChat',
+          onlineChat,
+        });
+        break;
+      }
+
       //Config
       case 'getConfig': {
         const config = await getConfig();
+        if (config.secretKey) {
+          console.log('Secret key: ', config.secretKey);
+          const sk = new Uint8Array(Buffer.from(config.secretKey, 'base64'));
+          const publicKey = getPublicKey(sk);
+          console.log('Public key: ', publicKey);
+          config.publicKey = publicKey;
+        }
         event.sender.send('onNodeCodeResponse_getConfig', {
           func: 'getConfig',
           config,
@@ -98,15 +136,15 @@ export function handleRunNodeCode() {
         });
         break;
       }
-
       case 'genSecretKey': {
         const sk = generateSecretKey();
+        const secretKey = Buffer.from(sk).toString('base64');
         const pk = getPublicKey(sk);
 
-        setConfigValue('secretKey', sk);
+        setConfigValue('secretKey', secretKey);
         event.sender.send('onNodeCodeResponse_genSecretKey', {
           func: 'genSecretKey',
-          secretKey: sk,
+          secretKey: secretKey,
           publicKey: pk,
         });
         break;

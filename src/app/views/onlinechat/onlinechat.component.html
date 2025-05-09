@@ -3,7 +3,11 @@
     <div class="flex w-full h-full justify-center items-center">
       <ng-container
         ><div class="flex flex-row justify-center items-center">
-          <h1 class="text-xl">Cargando chat...</h1>
+          <h1 *ngIf="!error" class="text-xl">Cargando chat...</h1>
+          <h1 *ngIf="error" class="text-xl text-red-500">
+            <i class="pi pi-exclamation-triangle pr-2"></i>
+            {{ error }}
+          </h1>
         </div>
       </ng-container>
     </div>
@@ -16,7 +20,7 @@
           <i class="pi pi-comments pr-2"></i>
           <span>Chats </span>
         </h1>
-        <span class="pl-2 font-bold">| "{{ onlineChat.recipientId }}"</span>
+        <span class="pl-2 font-bold">| "{{ onlineChat.id }}"</span>
       </div>
     </header>
     <div #chatRef class="flex flex-1 flex-col overflow-y-auto pr-4">
@@ -40,7 +44,6 @@
               message.type === 'model' || message.type === 'system' || message.type === 'external',
           }"
         >
-          <markdown [data]="message.message" class="text-md/6 block"></markdown>
           <small
             class="flex flex-row justify-end items-center text-xs w-full mt-5 italic text-slate-300 border-t border-dotted border-slate-400 pt-1"
             [ngClass]="{

@@ -26,6 +26,7 @@ export class ConfigComponent implements OnInit {
     "topK": 40,
     "topP": 0.4
 }`;
+  public appConfig: any = null;
 
   async ngOnInit() {
     try {
@@ -43,10 +44,13 @@ export class ConfigComponent implements OnInit {
         }
       }
 
-      const config = await (window as any).electronAPI.runNodeCode({ func: 'getConfig' });
-      if (!config || !config.sk) {
+      this.appConfig = await (window as any).electronAPI.runNodeCode({ func: 'getConfig' });
+      this.appConfig = this.appConfig.config;
+      if (!this.appConfig || !this.appConfig.secretKey) {
         await (window as any).electronAPI.runNodeCode({ func: 'genSecretKey' });
+        this.appConfig = await (window as any).electronAPI.runNodeCode({ func: 'getConfig' });
       }
+      console.log('Config loaded:', this.appConfig);
     } catch (error) {
       console.log(error);
       this.electronTest = false;

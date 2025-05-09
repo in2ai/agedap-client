@@ -13,10 +13,12 @@ export class OnlineChatService {
         limit: 10,
       });
       const recoveredOnlineChats: OnlineChat[] =
-        response.onlinechats?.map((ws: any) => {
+        response.onlineChats?.map((ws: any) => {
           return {
             id: ws.id,
-            recipientId: ws.recipientId ?? '-',
+            authors: ws.authors,
+            tags: ws.tags,
+            relay: ws.relay,
             createdAt: ws.createdAt,
             updatedAt: ws.updatedAt,
           };
@@ -24,6 +26,27 @@ export class OnlineChatService {
       return recoveredOnlineChats;
     } catch (error) {
       throw new Error(`Error getting onlinechats: ${error}`);
+    }
+  }
+
+  async getOnlineChat(id: string): Promise<OnlineChat> {
+    try {
+      const response = await (window as any).electronAPI.runNodeCode({
+        func: 'getOnlineChat',
+        onlineChatId: id,
+      });
+      console.log('response', response);
+      const onlineChat: OnlineChat = {
+        id: response.onlineChat.id,
+        authors: response.onlineChat.authors,
+        tags: response.onlineChat.tags,
+        relay: response.onlineChat.relay,
+        createdAt: response.onlineChat.createdAt,
+        updatedAt: response.onlineChat.updatedAt,
+      };
+      return onlineChat;
+    } catch (error) {
+      throw new Error(`Error getting onlinechat: ${error}`);
     }
   }
 }

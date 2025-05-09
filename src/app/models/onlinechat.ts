@@ -1,6 +1,8 @@
 export interface OnlineChat {
   id?: string;
-  recipientId: string;
+  authors: string[];
+  tags: string[];
+  relay: string;
   createdAt?: string;
   updatedAt?: string;
 }

@@ -52,6 +52,12 @@
         </footer>
       </section>
     </div>
+    <label
+      *ngIf="appConfig && appConfig.publicKey"
+      class="block text-slate-500 text-sm font-bold my-2"
+    >
+      PK: {{ appConfig.publicKey }}
+    </label>
   </div>
 
   <!-- <app-button

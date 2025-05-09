@@ -16,12 +16,20 @@ export async function getOnlineChats() {
   return onlineChatsDb.data;
 }
 
-export async function newOnlineChat(recipientId) {
+export async function getOnlineChat(id) {
+  await onlineChatsDb.read();
+  const chat = onlineChatsDb.data.find((c) => c.id === id);
+  if (!chat) throw new Error('Chat no encontrado');
+  return chat;
+}
+
+export async function newOnlineChat(authors, tags) {
   const id = uuidv4();
   const date = new Date();
   const onlineChat = {
     id,
-    recipientId,
+    authors,
+    tags,
     createdAt: date,
     updatedAt: date,
   };

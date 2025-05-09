@@ -27,7 +27,30 @@ export class OnlineChatListComponent implements OnInit {
   // Table configutation
   public onlineChats: OnlineChat[] = [];
   public colDefs: ColDef<OnlineChat>[] = [
-    { field: 'recipientId', headerName: 'ID de destinatario' },
+    {
+      field: 'authors',
+      headerName: 'ID de destinatario',
+      valueGetter: (params) => {
+        if (params && params.data && params.data.authors && params.data.authors.length > 0) {
+          const authors = params.data.authors;
+          if (authors && authors.length > 0) {
+            return authors[1].toString();
+          }
+        }
+        return '';
+      },
+    },
+    {
+      field: 'tags',
+      headerName: 'Tags',
+      valueGetter: (params) => {
+        if (params && params.data && params.data.tags && params.data.tags.length > 0) {
+          const tags = params.data.tags;
+          return tags.join(', ');
+        }
+        return '';
+      },
+    },
     {
       field: 'createdAt',
       headerName: 'Creado el',

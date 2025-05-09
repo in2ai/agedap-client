@@ -1,11 +1,12 @@
 import { Routes } from '@angular/router';
 import { TitleResolver } from './service/title.resolver';
 import { ConfigComponent } from './views/config/config.component';
+import { OnlineChatListComponent } from './views/onlinechat-list/onlinechat-list.component';
+import { OnlineChatComponent } from './views/onlinechat/onlinechat.component';
 import { PageNotFoundComponent } from './views/page-not-found/page-not-found.component';
 import { WorkSpaceDetailComponent } from './views/work-space-detail/work-space-detail.component';
 import { WorkSpaceNewComponent } from './views/work-space-new/work-space-new.component';
 import { WorkSpaceComponent } from './views/work-space/work-space.component';
-import { OnlineChatListComponent } from './views/onlinechat-list/onlinechat-list.component';
 
 export const routes: Routes = [
   {
@@ -36,6 +37,10 @@ export const routes: Routes = [
   {
     path: 'onlinechat',
     component: OnlineChatListComponent,
+  },
+  {
+    path: 'onlinechat/:chatId',
+    component: OnlineChatComponent,
   },
   {
     path: '**',
