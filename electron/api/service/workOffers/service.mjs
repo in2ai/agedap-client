@@ -70,7 +70,23 @@ export async function workOffersService(theChatController) {
     await sendMessage(firstMessage);
   }
 
-  await sendMessage('Estamos buscando ofertas de trabajo que se ajusten a tu perfil...');
+  //si el ultimo mensaje no es "Estamos buscando ofertas de trabajo que se ajusten a tu perfil..." entonces lo enviamos
+  let printLookingForWork = true;
+  //chek if the last message is "Estamos buscando ofertas de trabajo que se ajusten a tu perfil..."
+  if (chat.messages.length > 0) {
+    const lastMessage = chat.messages[chat.messages.length - 1];
+    if (lastMessage.type === 'external') {
+      if (
+        lastMessage.message.includes(
+          'Estamos buscando ofertas de trabajo que se ajusten a tu perfil...'
+        )
+      ) {
+        printLookingForWork = false;
+      }
+    }
+  }
+  if (printLookingForWork)
+    await sendMessage('Estamos buscando ofertas de trabajo que se ajusten a tu perfil...');
 
   setTimeout(checkWorkOffers, 5000);
   const timer = setInterval(checkWorkOffers, checkInterval);
@@ -92,7 +108,7 @@ async function checkWorkOffers() {
       const response = await computeSimilarity(userCv, workOffer);
       const similarity = response.overallSimilarity;
       workOffer.similarity = similarity;
-
+      console.log('workOffer: ', workOffer);
       if (similarity > similarityThreshold) {
         const message = `Hemos encontrado una oferta de trabajo que podría interesarte:
         <br/><br/>
@@ -102,6 +118,13 @@ async function checkWorkOffers() {
         **Ubicación:** ${workOffer.location}<br/>
         **Sueldo:** ${workOffer.price}${workOffer.currency} ${workOffer.period}<br/>
         **Similitud:** ${similarity.toFixed(2) * 100}%<br/>
+        <br/><br/>
+        **{{object:{
+            \"type\": \"workOffer\",
+            \"relayUrl\": \"${relay.url}\",
+            \"nostrId\": \"${workOffer.nostrId}\",
+            \"authorPublicKey\": \"${workOffer.authorPublicKey}\"
+          }:object}}**<br/>
         `;
         await sendMessage(message);
       }

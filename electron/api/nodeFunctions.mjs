@@ -19,6 +19,7 @@ import {
   newChat,
   newOnlineChat,
   newWorkspace,
+  onlineChatExists,
   setConfig,
   setConfigValue,
 } from './db.mjs';
@@ -76,8 +77,9 @@ export function handleRunNodeCode() {
         break;
       }
       case 'newOnlineChat': {
-        const { authors, tags } = data;
-        const onlineChat = await newOnlineChat(authors, tags);
+        const { relay, authors, tags } = data;
+        let onlineChat = await onlineChatExists(relay, authors, tags);
+        if (!onlineChat) onlineChat = await newOnlineChat(relay, authors, tags);
         event.sender.send('onNodeCodeResponse_newOnlineChat', {
           func: 'newOnlineChat',
           onlineChat,

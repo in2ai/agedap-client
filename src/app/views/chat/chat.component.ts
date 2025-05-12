@@ -1,5 +1,6 @@
 import { CommonModule, DatePipe, NgFor } from '@angular/common';
 import {
+  AfterViewInit,
   ChangeDetectorRef,
   Component,
   ElementRef,
@@ -39,7 +40,7 @@ type Message = {
     DatePipe,
   ],
 })
-export class ChatComponent implements OnInit, OnDestroy {
+export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
   router = inject(Router);
   activatedRoute = inject(ActivatedRoute);
 
@@ -55,6 +56,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   public errorMessage?: string;
   public form!: FormGroup;
   public messages: Message[] = [];
+  public workOffers: any[] = [];
+  public myPkey!: string;
 
   constructor(
     private fb: FormBuilder,
@@ -65,6 +68,10 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   async ngOnInit() {
     // Recover chat data
+    let appConfig = await (window as any).electronAPI.runNodeCode({ func: 'getConfig' });
+    appConfig = appConfig.config;
+    this.myPkey = appConfig.publicKey;
+
     try {
       this.chat = await this.chatService.getChat(this.chatId);
 
@@ -80,12 +87,33 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
   }
 
+  ngAfterViewInit() {
+    document.body.addEventListener('click', this.handleGlobalClick.bind(this));
+  }
+
+  handleGlobalClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    const anchor = target.closest('a[href^="workoffer:"]') as HTMLAnchorElement;
+
+    if (anchor) {
+      event.preventDefault();
+
+      const href = anchor.getAttribute('href');
+      const index = Number(href?.split(':')[1]);
+
+      if (!isNaN(index)) {
+        this.onWorkOfferClick(index);
+      }
+    }
+  }
+
   ngOnDestroy(): void {
     console.log(`//Chat component destroyed`);
     (window as any).electronAPI.runNodeCode({
       func: 'unloadChat',
       chatId: this.chatId,
     });
+    document.body.removeEventListener('click', this.handleGlobalClick.bind(this));
   }
 
   async checkModel() {
@@ -116,6 +144,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       //Pintar mensajes
       if (response.messages.length > 0) {
         this.messages = response.messages;
+        this.processMessages();
         this.changeDetector.detectChanges();
         this.chatRef.nativeElement.scrollTop = this.chatRef.nativeElement.scrollHeight;
       }
@@ -152,6 +181,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       if (data.func === 'onNewExternalMessage' && data.chatId === this.chatId) {
         const { content } = data;
         this.messages.push({ type: 'external', message: content });
+        this.processMessage(content, this.messages.length - 1);
         this.changeDetector.detectChanges();
         this.chatRef.nativeElement.scrollTop = this.chatRef.nativeElement.scrollHeight;
       }
@@ -208,5 +238,57 @@ export class ChatComponent implements OnInit, OnDestroy {
       chatId: this.chatId,
     });
     this.router.navigate([`/workspace/${this.chat.workspaceId}`]);
+  }
+
+  processMessages() {
+    for (let i = 0; i < this.messages.length; i++) {
+      this.processMessage(this.messages[i].message, i);
+    }
+  }
+
+  processMessage(content: string, index: number) {
+    let newContent = content;
+    const start = content.indexOf('**{{object:');
+    if (start !== -1) {
+      const end = content.indexOf(':object}}**', start);
+      if (end !== -1) {
+        const object = content.substring(start + 11, end);
+        try {
+          const jsonObject = JSON.parse(object);
+          newContent = content.replace(`**{{object:${object}:object}}**`, '');
+
+          this.workOffers.push(jsonObject);
+          switch (jsonObject.type) {
+            case 'workOffer': {
+              newContent += `<a href="workoffer:${this.workOffers.length - 1}"><strong>Haz clic aquí si te interesa esta oferta de trabajo</strong></a>`;
+              break;
+            }
+          }
+        } catch (error) {
+          console.log(`//Error parsing object: ${error}`);
+        }
+      }
+    }
+    this.messages[index].message = newContent;
+  }
+
+  async onWorkOfferClick(index: number) {
+    const workOffer = this.workOffers[index];
+    console.log('//Work offer clicked: ', workOffer);
+
+    const response = await (window as any).electronAPI.runNodeCode({
+      func: 'newOnlineChat',
+      relay: workOffer.relayUrl,
+      authors: [this.myPkey, workOffer.authorPublicKey],
+      tags: [workOffer.nostrId],
+    });
+    console.log('//New online chat response: ', response);
+    const onlineChatId = response.onlineChat.id;
+    await (window as any).electronAPI.runNodeCode({
+      func: 'unloadChat',
+      chatId: this.chatId,
+    });
+
+    this.router.navigate([`/onlinechat/${onlineChatId}`]);
   }
 }
