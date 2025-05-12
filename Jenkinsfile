@@ -81,7 +81,6 @@ pipeline {
     post {
         always {
             archiveArtifacts artifacts: '**/coverage/**', fingerprint: true
-            junit '**/test-results/**/*.xml'
         }
     }
 }

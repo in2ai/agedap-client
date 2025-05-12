@@ -15,8 +15,6 @@ const mockChatService = {
     .and.returnValue(Promise.resolve({ id: '1', name: 'Test Chat' })),
 };
 
-// Mock de electronAPI
-
 describe('ChatComponent', () => {
   let component: ChatComponent;
   let fixture: ComponentFixture<ChatComponent>;
