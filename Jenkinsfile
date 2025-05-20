@@ -62,6 +62,9 @@ pipeline {
             }
         }
         stage('Package & Release') {
+          echo "CHANGE_ID: ${env.CHANGE_ID}"
+          echo "BRANCH_NAME: ${env.BRANCH_NAME}"
+          echo "BUILD_NUMBER: ${env.BUILD_NUMBER}"
           when {
               expression { !env.CHANGE_ID && env.BRANCH_NAME == 'main' } // solo para main y no en PRs
           }
