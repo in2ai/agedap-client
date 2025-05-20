@@ -5,6 +5,10 @@ pipeline {
             args '-u root:root'
         }
     }
+    environment {
+      GITHUB_TOKEN = credentials('AGEDAP_GH_TOKEN')
+      APP_NAME_WIN = "agedap-llamatron-win32-x64-build-${env.BUILD_NUMBER}.zip"
+    }
     stages {
         stage('Build: Install dependencies') {
             steps {
@@ -78,7 +82,6 @@ pipeline {
 
               // Ejecutar el empaquetado
               script { // Windows
-                def appNameWin = "agedap-llamatron-win32-x64-build-${env.BUILD_NUMBER}.zip"
                 sh 'npm run package-win'
 
                 // Instalar zip si no lo tienes
@@ -90,20 +93,17 @@ pipeline {
                     cp win/sharp-win32-x64.node out/agedap-llamatron-win32-x64/
                     cp win/libvips-cpp.dll out/agedap-llamatron-win32-x64/
                     cp win/libvips-42.dll out/agedap-llamatron-win32-x64/
-                    cd out/agedap-llamatron-win32-x64/
-                    mkdir db
                 """
 
                 // Crear el archivo zip
                 sh """
                     cd out/
-                    zip -r -9 ${appNameWin} agedap-llamatron-win32-x64
+                    zip -r -9 ${APP_NAME_WIN} agedap-llamatron-win32-x64
                 """
               }
 
               // Subir a GitHub Releases usando la GitHub CLI o cURL
               script {
-                  def ghToken = "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"
                   def tagName = "build-${env.BUILD_NUMBER}"
                   def releaseName = "Release ${env.BUILD_NUMBER}"
                   echo "Creating release ${releaseName} with tag ${tagName}"
@@ -126,12 +126,12 @@ pipeline {
                   '''
 
                   // Crear release y subir el artefacto (usando GitHub CLI)
-                  withEnv(["GH_TOKEN=${ghToken}"]) {
-                    sh """
-                        gh auth setup-git
-                        gh release create ${tagName} --title "${releaseName}" --notes "Automated release from Jenkins" out/${appNameWin}
-                    """
-                }
+                  withEnv(["GH_TOKEN=${GITHUB_TOKEN}"]) {
+                      sh """
+                          gh auth setup-git
+                          gh release create ${tagName} --title "${releaseName}" --notes "Automated release from Jenkins" out/${APP_NAME_WIN}
+                      """
+                  }
               }
           }
       }
