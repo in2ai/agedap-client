@@ -85,7 +85,7 @@ pipeline {
                 sh 'npm run package-win'
 
                 // Instalar zip si no lo tienes
-                sh 'apt-get install -y zip'
+                sh 'apt-get install -y p7zip-full'
 
                 // Copy required files to the output directory
                 sh """
@@ -98,7 +98,7 @@ pipeline {
                 // Crear el archivo zip
                 sh """
                     cd out/
-                    zip -r -9 ${APP_NAME_WIN} agedap-llamatron-win32-x64
+                    7z a -t7z -mx=9 ${APP_NAME_WIN} agedap-llamatron-win32-x64
                 """
               }
 
