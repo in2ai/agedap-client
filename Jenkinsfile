@@ -41,7 +41,7 @@ pipeline {
                     if (env.CHANGE_ID) {
                         echo "Building pull request #${env.CHANGE_ID}"
                     } else {
-                        echo "Building branch ${env.BRANCH_NAME}"
+                        echo "Building"
                     }
                 }
                 sh 'npm install --force'
@@ -55,7 +55,7 @@ pipeline {
                     if (env.CHANGE_ID) {
                         echo "Running tests for pull request #${env.CHANGE_ID}"
                     } else {
-                        echo "Running tests for branch ${env.BRANCH_NAME}"
+                        echo "Running tests"
                     }
                 }
                 sh 'ng test --code-coverage --watch=false --browsers=ChromeHeadless'
@@ -63,7 +63,7 @@ pipeline {
         }
         stage('Package & Release') {
           when {
-              expression { !env.CHANGE_ID && env.BRANCH_NAME == 'main' } // solo para main y no en PRs
+              expression { !env.CHANGE_ID } // no en PRs
           }
           steps {
               script {
