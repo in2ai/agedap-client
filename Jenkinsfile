@@ -73,6 +73,9 @@ pipeline {
                   echo "Packaging Electron app..."
               }
 
+              // Rm old out/ if exists
+              sh 'rm -rf out/'
+
               // Ejecutar el empaquetado
               // Windows
               sh 'npm run package-win'
@@ -87,23 +90,24 @@ pipeline {
               '''
 
               // Subir a GitHub Releases usando la GitHub CLI o cURL
-              withCredentials([string(credentialsId: 'GITHUB_TOKEN', variable: 'GH_TOKEN')]) {
-                  script {
-                      def tagName = "build-${env.BUILD_NUMBER}"
-                      def releaseName = "Release ${env.BUILD_NUMBER}"
+              script {
+                  def ghToken = "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"
+                  def tagName = "build-${env.BUILD_NUMBER}"
+                  def releaseName = "Release ${env.BUILD_NUMBER}"
+                  echo "Creating release ${releaseName} with tag ${tagName}"
+                  echo "Using GitHub token: ${ghToken}"
 
-                      // Crear release y subir el artefacto (usando GitHub CLI)
-                      sh '''
-                          apt-get install -y curl jq
-                          curl -sL https://github.com/cli/cli/releases/latest/download/gh_2.49.0_linux_amd64.deb -o gh.deb
-                          dpkg -i gh.deb || true
-                          apt-get install -f -y
+                  // Crear release y subir el artefacto (usando GitHub CLI)
+                  sh '''
+                      apt-get install -y curl jq
+                      curl -sL https://github.com/cli/cli/releases/latest/download/gh_2.49.0_linux_amd64.deb -o gh.deb
+                      dpkg -i gh.deb || true
+                      apt-get install -f -y
 
-                          gh auth login --with-token <<< "$GH_TOKEN"
+                      gh auth login --with-token <<< "${ghToken}"
 
-                          gh release create ${TAG_NAME} out/app.zip --title "${RELEASE_NAME}" --notes "Automated release from Jenkins"
-                      '''
-                  }
+                      gh release create ${tagName} out/app.zip --title "${releaseName}" --notes "Automated release from Jenkins"
+                  '''
               }
           }
       }
