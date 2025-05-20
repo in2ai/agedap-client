@@ -95,12 +95,10 @@ pipeline {
                   def tagName = "build-${env.BUILD_NUMBER}"
                   def releaseName = "Release ${env.BUILD_NUMBER}"
                   echo "Creating release ${releaseName} with tag ${tagName}"
-                  echo "Using GitHub token: ${ghToken}"
-
                   // Crear release y subir el artefacto (usando GitHub CLI)
                   sh '''
                       apt-get install -y curl jq
-                      curl -sL https://github.com/cli/cli/releases/latest/download/gh_2.49.0_linux_amd64.deb -o gh.deb
+                      curl -sL https://github.com/cli/cli/releases/download/v2.73.0/gh_2.73.0_linux_amd64.deb -o gh.deb
                       dpkg -i gh.deb || true
                       apt-get install -f -y
 
