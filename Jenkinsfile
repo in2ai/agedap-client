@@ -71,7 +71,7 @@ pipeline {
               }
 
               // Ejecutar el empaquetado
-              // Windows x64
+              // Windows
               sh 'npm run package-win'
 
               // Instalar zip si no lo tienes
