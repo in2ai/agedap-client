@@ -82,7 +82,7 @@ pipeline {
 
               // Ejecutar el empaquetado
               script { // Windows
-                sh 'npm install --os=win32 --cpu=x64 sharp'
+                sh 'npm install --os=win32 --cpu=x64 sharp --force'
                 sh 'npm run package-win'
 
                 // Instalar zip si no lo tienes
