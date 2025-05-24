@@ -49,6 +49,18 @@ export async function newOnlineChat(relay, authors) {
   return onlineChat;
 }
 
+export async function deleteOnlineChat(id) {
+  await onlineChatsDb.read();
+  const chatIndex = onlineChatsDb.data.findIndex((c) => c.id === id);
+  if (chatIndex === -1) throw new Error('Chat no encontrado');
+
+  const deletedChat = onlineChatsDb.data[chatIndex];
+  onlineChatsDb.data.splice(chatIndex, 1);
+  await onlineChatsDb.write();
+
+  return deletedChat;
+}
+
 //Config DB
 const configDb = await JSONFilePreset(path.join(dbPath, 'config.json'), {});
 

@@ -47,4 +47,15 @@ export class OnlineChatService {
       throw new Error(`Error getting onlinechat: ${error}`);
     }
   }
+
+  async deleteOnlineChat(id: string): Promise<void> {
+    try {
+      await (window as any).electronAPI.runNodeCode({
+        func: 'deleteOnlineChat',
+        id: id,
+      });
+    } catch (error) {
+      throw new Error(`Error deleting onlinechat: ${error}`);
+    }
+  }
 }

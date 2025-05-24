@@ -6,6 +6,7 @@ import {
   addChatMessage,
   deleteChat,
   deleteConfigValue,
+  deleteOnlineChat,
   deleteWorkspace,
   getChat,
   getChatMessages,
@@ -83,6 +84,15 @@ export function handleRunNodeCode() {
         event.sender.send('onNodeCodeResponse_newOnlineChat', {
           func: 'newOnlineChat',
           onlineChat,
+        });
+        break;
+      }
+      case 'deleteOnlineChat': {
+        const { id } = data;
+        const chat = await deleteOnlineChat(id);
+        event.sender.send('onNodeCodeResponse_deleteOnlineChat', {
+          func: 'deleteOnlineChat',
+          chat,
         });
         break;
       }
