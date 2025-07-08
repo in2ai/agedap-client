@@ -1,4 +1,4 @@
-import { addChatMessage } from '../../db.mjs';
+import { addChatMessage, updateChatLastTimestamp } from '../../db.mjs';
 import { getUserFromLinkedinZip } from '../../linkedin.mjs';
 import { getWorkOffers } from '../../relay.mjs';
 import { RELAY_LIST } from '../../relays.mjs';
@@ -14,9 +14,9 @@ export async function workOffersService(theChatController) {
   userCv = null;
   chatController = theChatController;
 
-  const { chat, workspace } = chatController;
+  const { chat } = chatController;
   let cvPath = null;
-  for (const document of workspace.documents) {
+  for (const document of chat.documents) {
     if (document.type === 'linkedin') {
       cvPath = document.path;
       break;
@@ -79,6 +79,9 @@ export async function workOffersService(theChatController) {
       if (
         lastMessage.message.includes(
           'Estamos buscando ofertas de trabajo que se ajusten a tu perfil...'
+        ) ||
+        lastMessage.message.includes(
+          'No hemos encontrado ofertas de trabajo que se ajusten a tu perfil.'
         )
       ) {
         printLookingForWork = false;
@@ -95,14 +98,14 @@ export async function workOffersService(theChatController) {
 
 async function checkWorkOffers(printLookingForWork) {
   console.log('Checking work offers...');
-  const { workspace, event } = chatController;
-  const relay = RELAY_LIST.find((r) => r.id === workspace.relayId);
+  const { chat, event } = chatController;
+  const relay = RELAY_LIST.find((r) => r.plugin === chat.plugin);
 
   if (!relay || !relay.url) return;
 
-  const workOffers = await getWorkOffers(relay.url, workspace.lastTimestamp, null);
+  const workOffers = await getWorkOffers(relay.url, chat.lastTimestamp || 0, null);
   let matchedOffersCount = 0;
-  //chatController.workspace = await updateWorkspace(workspace.id);
+  chatController.chat = await updateChatLastTimestamp(chat.id);
 
   for (const workOffer of workOffers) {
     try {

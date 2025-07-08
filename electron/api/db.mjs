@@ -106,7 +106,7 @@ export async function newChat(
   name,
   description,
   type = null,
-  agentName = null,
+  plugin = null,
   documents = null,
   authors = null,
   relay = null
@@ -118,17 +118,35 @@ export async function newChat(
     name,
     description,
     type,
-    agentName,
+    plugin,
     documents,
     authors,
     relay,
     messages: [],
     createdAt: date,
     updatedAt: date,
+    lastTimestamp: 0,
   };
   // Update chat
   await chatsDb.read();
   await chatsDb.update((data) => data.push(chat));
+  return chat;
+}
+
+export async function updateChatLastTimestamp(chatId) {
+  const chat = await getChat(chatId);
+  if (!chat) throw new Error('Chat no encontrado');
+
+  const timestamp = new Date().getTime();
+  chat.lastTimestamp = timestamp;
+  chat.updatedAt = new Date();
+  await chatsDb.read();
+  await chatsDb.update((data) => {
+    const chatIndex = data.findIndex((c) => c.id === chatId);
+    if (chatIndex === -1) throw new Error('Chat no encontrado');
+    data[chatIndex].lastTimestamp = timestamp;
+    data[chatIndex].updatedAt = chat.updatedAt;
+  });
   return chat;
 }
 

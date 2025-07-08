@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { getGPUTier } from 'detect-gpu';
 import { MessageService } from 'primeng/api';
@@ -22,6 +23,7 @@ import { AppService } from 'src/app/service/app.service';
     ButtonComponent,
     FormsModule,
     ProgressSpinnerModule,
+    ReactiveFormsModule,
   ],
   providers: [MessageService],
 })
@@ -47,13 +49,13 @@ export class ConfigComponent implements OnInit {
   public togetherApiKey: string = '';
   public minTier: number = 3;
   public loading: boolean = true;
-  public chatInput: string = '';
+  public form!: FormGroup;
 
   public exampleButtons = [
     {
       title: 'Ayúdame a encontrar trabajo',
       type: 'plugin',
-      value: 'findJob',
+      value: 'workOffers',
     },
     {
       title: 'Obtener consejos',
@@ -84,12 +86,16 @@ export class ConfigComponent implements OnInit {
 
   constructor(
     private messageService: MessageService,
-    private appService: AppService
+    private appService: AppService,
+    private fb: FormBuilder,
+    private router: Router
   ) {}
 
   async ngOnInit() {
     try {
-      this.chatInput = '';
+      this.form = this.fb.group({
+        message: [''],
+      });
       this.loading = true;
       const response = await (window as any).electronAPI.runNodeCode({
         func: 'loadApp',
@@ -161,6 +167,7 @@ export class ConfigComponent implements OnInit {
       });
       this.modelName = response.modelName;
       this.modelLoaded = true;
+      this.isRemoteModel = false;
       this.appService.sendData({
         modelName: this.modelName,
         modelLoaded: this.modelLoaded,
@@ -233,7 +240,7 @@ export class ConfigComponent implements OnInit {
     this.modelName = undefined;
     this.isSelectingModel = false;
     this.togetherApiKey = '';
-    this.chatInput = '';
+    this.form.reset();
     this.appService.sendData({
       modelName: undefined,
       modelLoaded: false,
@@ -242,15 +249,28 @@ export class ConfigComponent implements OnInit {
 
   onExampleButtonClick(button: any) {
     if (button.type === 'plugin') {
-      this.messageService.add({
-        severity: 'info',
-        summary: 'Plugin',
-        detail: `Plugin seleccionado: ${button.value}`,
+      this.router.navigate(['/chat', 'new'], {
+        queryParams: {
+          type: 'plugin',
+          value: button.value,
+        },
       });
     } else if (button.type === 'text') {
-      this.chatInput = button.value;
+      this.form.get('message')?.setValue(button.value);
       //focus the input field
       this.chatInputField.nativeElement.focus();
     }
+  }
+
+  sendMessage() {
+    const message = this.form.get('message')?.value;
+    if (message.length === 0) return;
+
+    this.router.navigate(['/chat', 'new'], {
+      queryParams: {
+        type: 'text',
+        message: message,
+      },
+    });
   }
 }

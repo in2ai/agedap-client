@@ -1,0 +1,95 @@
+<p-confirmdialog [baseZIndex]="10000" [style]="{ 'max-width': '600px' }"></p-confirmdialog>
+
+<div class="flex flex-col w-full h-full justify-center items-center text-mainContentText">
+  <ng-container *ngIf="!isChatLoaded">
+    <div class="flex w-full h-full justify-center items-center">
+      <ng-container *ngIf="!errorMessage"
+        ><div class="flex flex-row justify-center items-center">
+          <p-progress-spinner
+            strokeWidth="8"
+            fill="transparent"
+            animationDuration=".5s"
+            [style]="{ width: '50px', height: '50px' }"
+          />
+        </div>
+      </ng-container>
+      <div
+        *ngIf="errorMessage"
+        class="text-red-300 flex flex-row justify-center items-center font-bold text-md p-5 max-w-6xl gap-2"
+      >
+        <i class="!text-2xl pi pi-exclamation-triangle"></i>
+        <div>{{ errorMessage }}</div>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="isChatLoaded">
+    <div class="w-full max-w-6xl p-5 mx-20 flex flex-col justify-center h-full">
+      <div #chatRef class="flex flex-1 flex-col overflow-y-auto pr-4 gap-10">
+        <div
+          *ngFor="let message of messages"
+          [ngClass]="{
+            'justify-end': message.type === 'user',
+            'justify-start':
+              message.type === 'model' || message.type === 'system' || message.type === 'external',
+          }"
+          class="flex w-full mb-2"
+        >
+          <div
+            *ngIf="message.type === 'user'"
+            class="max-w-[80%] p-2 px-4 text-md rounded-2xl bg-primaryButtonBgHover flex flex-col justify-end items-end"
+          >
+            <markdown [data]="message.message" class="block"></markdown>
+            <small class="text-secondaryText text-xs mt-2">{{
+              message.createdAt | date: 'dd/MM/yyyy hh:mm'
+            }}</small>
+          </div>
+          <div
+            *ngIf="message.type !== 'user'"
+            class="max-w-[80%] p-2 px-4 text-md flex flex-col justify-start items-start"
+          >
+            <markdown [data]="message.message" class="block"></markdown>
+            <small class="text-secondaryText text-xs mt-2">{{
+              message.createdAt | date: 'dd/MM/yyyy hh:mm'
+            }}</small>
+          </div>
+        </div>
+      </div>
+
+      <form class="w-full flex flex-col gap-2" [formGroup]="form" (ngSubmit)="sendMessage()">
+        <div
+          class="flex flex-row gap-2 items-center rounded-4xl bg-chatInputBg p-4 shadow-2xl w-full"
+        >
+          <input
+            type="text"
+            placeholder="Pregunta lo que quieras..."
+            formControlName="message"
+            class="w-full border-0 outline-none bg-transparent text-mainContentText disabled:cursor-not-allowed disabled:opacity-50"
+            required
+          />
+          <button
+            *ngIf="!generatingResponse"
+            title="Enviar mensaje"
+            class="text-primaryButtonText px-2 hover:text-primaryButtonTextHover hover:scale-110 transition-transform duration-200"
+            [ngClass]="{
+              'cursor-pointer': modelLoaded,
+              'opacity-50 cursor-not-allowed': !modelLoaded,
+            }"
+            type="submit"
+          >
+            <i class="pi pi-arrow-up"></i>
+          </button>
+          <button
+            *ngIf="generatingResponse"
+            title="Parar generación"
+            class="text-primaryButtonText cursor-pointer px-2 hover:text-primaryButtonTextHover hover:scale-110 transition-transform duration-200"
+            type="button"
+            (click)="stopGeneratingResponse()"
+          >
+            <i class="pi pi-stop"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+  </ng-container>
+</div>

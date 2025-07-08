@@ -41,10 +41,13 @@ export function handleRunNodeCode() {
         break;
       }
       case 'loadApp': {
-        const dbConfig = await getConfig();
-        if (dbConfig && dbConfig.modelPath && dbConfig.modelPath !== '') {
-          await loadModel(dbConfig);
-          console.log('Configuration loaded from DB:', dbConfig);
+        console.log('Loading app...', configuration);
+        if (!configuration) {
+          const dbConfig = await getConfig();
+          if (dbConfig && dbConfig.modelPath && dbConfig.modelPath !== '') {
+            await loadModel(dbConfig);
+            console.log('Configuration loaded from DB:', dbConfig);
+          }
         }
 
         let state = { modelPath: null, configuration: null };
@@ -272,8 +275,8 @@ export function handleRunNodeCode() {
 
       //Chats
       case 'newChat': {
-        const { name, description, type, documents } = data;
-        const chat = await newChat(name, description, type, documents);
+        const { name, description, type, plugin, documents } = data;
+        const chat = await newChat(name, description, type, plugin, documents);
         event.sender.send('onNodeCodeResponse_newChat', {
           func: 'newChat',
           chat,
@@ -308,21 +311,24 @@ export function handleRunNodeCode() {
       }
 
       //Chat IA
-      /*case 'loadChat': {
+      case 'loadChat': {
         const { chatId } = data;
         const chat = await getChat(chatId);
-        const workspace = await getWorkspace(chat.workspaceId);
-        switch (workspace.type) {
-          case 'workOffers': {
-            changePromptTemplate(
-              'Eres un asistente de ofertas de trabajo. El usuario te va mandar los datos de su curriculum y las ofertas de trabajo disponibles que ya se han filtrado por su perfil y deberían ser de su interés.'
-            );
-            break;
+        if (chat && chat.type && chat.type === 'plugin' && chat.plugin) {
+          switch (chat.plugin) {
+            case 'workOffers': {
+              changePromptTemplate(
+                'Eres un asistente de ofertas de trabajo. El usuario te va mandar los datos de su curriculum y las ofertas de trabajo disponibles que ya se han filtrado por su perfil y deberían ser de su interés.'
+              );
+              break;
+            }
+            default: {
+              changePromptTemplate('Eres un asistente amable. Responde siempre de manera concisa.');
+              break;
+            }
           }
-          default: {
-            changePromptTemplate('Eres un asistente amable. Responde siempre de manera concisa.');
-            break;
-          }
+        } else {
+          changePromptTemplate('Eres un asistente amable. Responde siempre de manera concisa.');
         }
 
         const loadedMessages = chat.messages || [];
@@ -335,7 +341,7 @@ export function handleRunNodeCode() {
 
         startChatService(event, chat);
         break;
-      }*/
+      }
 
       case 'unloadChat': {
         const { chatId } = data;
@@ -350,6 +356,7 @@ export function handleRunNodeCode() {
       case 'sendMessage': {
         const { chatId, message } = data;
         let chatMessages = await getChatMessages(chatId);
+        console.log('Chat messages: ', chatMessages);
         const chatHistory = [];
         chatMessages.forEach((msg) => {
           if (msg.type === 'user' || msg.type === 'external') {

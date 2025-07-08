@@ -10,25 +10,23 @@ let chatController = {
 
 export async function startChatService(event, chat) {
   if (chatController.started) return;
-  return;
-  /*const workspace = await getWorkspace(chat.workspaceId);
-  if (!workspace) return;
 
   chatController = {
     started: true,
     chat: chat,
-    workspace: workspace,
     event: event,
     interval: null,
   };
 
-  switch (workspace.type) {
-    case 'workOffers': {
-      const timer = await workOffersService(chatController);
-      chatController.interval = timer;
-      break;
+  if (chat && chat.type && chat.type === 'plugin' && chat.plugin) {
+    switch (chat.plugin) {
+      case 'workOffers': {
+        const timer = await workOffersService(chatController);
+        chatController.interval = timer;
+        break;
+      }
     }
-  }*/
+  }
 }
 
 export async function stopChatService() {

@@ -107,23 +107,30 @@
     </label>-->
   </div>
   <!-- INPUT CHAT (bottom of page) -->
-  <div *ngIf="!loading && modelLoaded" class="w-full max-w-6xl p-5 mx-20 flex flex-col gap-2">
+  <form
+    *ngIf="!loading && modelLoaded"
+    class="w-full flex flex-col gap-2 max-w-6xl p-5 mx-20"
+    [formGroup]="form"
+    (ngSubmit)="sendMessage()"
+  >
     <div class="flex flex-row gap-2 items-center rounded-4xl bg-chatInputBg p-4 shadow-2xl w-full">
       <input
         #chatInputField
         type="text"
         placeholder="Pregunta lo que quieras..."
-        [(ngModel)]="chatInput"
+        formControlName="message"
         class="w-full border-0 outline-none bg-transparent text-mainContentText"
+        required
       />
       <button
         title="Enviar mensaje"
         class="text-primaryButtonText cursor-pointer px-2 hover:text-primaryButtonTextHover hover:scale-110 transition-transform duration-200"
+        type="submit"
       >
         <i class="pi pi-arrow-up"></i>
       </button>
     </div>
-  </div>
+  </form>
 
   <!-- <app-button
     icon="power-off"
