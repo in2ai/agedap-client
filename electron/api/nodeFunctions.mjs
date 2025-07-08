@@ -172,25 +172,39 @@ export function handleRunNodeCode() {
         if (config) {
           configuration = JSON.parse(config, (key, value) => (value === null ? undefined : value));
         }
-        const dialogResult = await dialog.showOpenDialog({
-          properties: ['openFile'],
-          filters: [{ name: 'Modelo', extensions: ['gguf'] }],
-        });
-        const { filePaths } = dialogResult;
 
-        if (filePaths.length > 0) {
-          const modelPath = filePaths[0];
-          let modelName = modelPath;
-          modelName = modelName.split('\\').pop() || '';
-          modelName = modelName.split('/').pop() || '';
-
-          configuration.modelPath = modelPath;
+        if (configuration && configuration.togetherAI) {
+          console.log('Using Together AI model');
+          let modelName = 'meta-llama/Llama-3.3-70B-Instruct-Turbo-Free';
+          configuration.modelName = modelName;
+          configuration.modelPath = modelName;
           await loadModel(configuration);
           event.sender.send('onNodeCodeResponse_selectModel', {
             func: 'selectModel',
             modelName,
-            modelPath,
+            modelPath: null,
           });
+        } else {
+          const dialogResult = await dialog.showOpenDialog({
+            properties: ['openFile'],
+            filters: [{ name: 'Modelo', extensions: ['gguf'] }],
+          });
+          const { filePaths } = dialogResult;
+
+          if (filePaths.length > 0) {
+            const modelPath = filePaths[0];
+            let modelName = modelPath;
+            modelName = modelName.split('\\').pop() || '';
+            modelName = modelName.split('/').pop() || '';
+
+            configuration.modelPath = modelPath;
+            await loadModel(configuration);
+            event.sender.send('onNodeCodeResponse_selectModel', {
+              func: 'selectModel',
+              modelName,
+              modelPath,
+            });
+          }
         }
         break;
       }

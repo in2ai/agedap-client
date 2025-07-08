@@ -37,6 +37,10 @@
   --color-chatUserMessageText: var(--color-slate-700);
 }
 
+.p-toast-detail {
+  color: black !important;
+}
+
 a {
   text-decoration: none;
 }

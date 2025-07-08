@@ -1,19 +1,43 @@
+<p-toast baseZIndex="9999999" position="top-right"></p-toast>
 <div class="flex w-full h-full justify-center items-center text-slate-500">
-  <div class="w-1/2">
-    <label class="block text-slate-500 text-sm font-bold mb-2" for="config">
-      DEVELOPER CONFIGURATION
-    </label>
-    <textarea class="w-full h-96 border border-slate-300 p-5 rounded-md" [(ngModel)]="config">
-    </textarea>
-    <div *ngIf="!modelLoaded" class="border border-slate-300 p-5 rounded-md">
+  <div class="w-full max-w-3xl p-5">
+    <h1 class="my-2 font-bold text-xl">Bienvenido a Agedap Llamatron</h1>
+    <p *ngIf="!modelLoaded">
+      La primera vez que inicie la aplicación, se le pedirá que seleccione un modelo de lenguaje.
+    </p>
+    <div *ngIf="!modelLoaded" class="border border-slate-300 p-5 rounded-md mt-5">
       <section class="text-justify">
         <header class="font-bold pb-3 mb-3 border-b border-gray-400 border-dotted">
-          <h1>Bienvenido a Agedap Llamatron</h1>
+          <h1>Modelo remoto</h1>
         </header>
         <main class="pb-10">
           <p>
-            La primera vez que inicie la aplicación, se le pedirá que seleccione un modelo de
-            lenguaje
+            Opción recomendada para equipos con poca memoria de GPU. Seleccione esta opción si su
+            equipo no es capaz de ejecutar un modelo localmente.
+          </p>
+        </main>
+        <footer class="flex justify-between gap-2">
+          <input
+            pInputText
+            type="text"
+            placeholder="Together AI API Key"
+            class="border border-slate-300 rounded-md w-full p-2"
+            [(ngModel)]="togetherApiKey"
+          />
+          <app-button (click)="loadRemoteModel()" label="Cargar" />
+        </footer>
+      </section>
+    </div>
+    <div *ngIf="!modelLoaded" class="border border-slate-300 p-5 rounded-md mt-5">
+      <section class="text-justify">
+        <header class="font-bold pb-3 mb-3 border-b border-gray-400 border-dotted">
+          <h1>Modelo local</h1>
+        </header>
+        <main class="pb-10">
+          <p>Seleccione un modelo de lenguaje local para comenzar a usar la aplicación.</p>
+          <p *ngIf="gpuTier < minTier" class="text-yellow-500 my-2">
+            <strong>Advertencia:</strong> Su equipo tiene una memoria de GPU baja. Se recomienda
+            utilizar un modelo en remoto para evitar problemas de rendimiento.
           </p>
         </main>
         <footer class="flex justify-end">
@@ -27,9 +51,14 @@
             "
           />
         </footer>
+        <details class="mt-5 mb-5">
+          <summary class="text-slate-500 text-sm font-bold">DEVELOPER CONFIGURATION</summary>
+          <textarea class="w-full h-96 border border-slate-300 p-5 rounded-md" [(ngModel)]="config">
+          </textarea>
+        </details>
       </section>
     </div>
-    <div *ngIf="modelLoaded" class="border-slate-100 p-5 rounded-md">
+    <div *ngIf="modelLoaded" class="border border-slate-300 p-5 rounded-md mt-5">
       <section class="text-justify">
         <header class="font-bold pb-3 mb-3 border-b border-gray-200">
           <h1>Modelo seleccionado</h1>
@@ -40,21 +69,13 @@
           </p>
         </main>
         <footer class="flex justify-end">
-          <app-button
-            [icon]="isSelectingModel ? 'spinner animate-spin' : 'file'"
-            (click)="selectModel()"
-            [label]="
-              isSelectingModel
-                ? ('CONFIG.LOADING_MODEL' | translate)
-                : ('CONFIG.CHANGE_MODEL' | translate)
-            "
-          />
+          <app-button (click)="resetModel()" label="Cargar otro modelo" />
         </footer>
       </section>
     </div>
     <label
       *ngIf="appConfig && appConfig.publicKey"
-      class="block text-slate-500 text-sm font-bold my-2"
+      class="block text-slate-500 text-sm font-bold my-4"
     >
       PK: {{ appConfig.publicKey }}
     </label>

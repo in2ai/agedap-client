@@ -1,6 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ToastModule } from 'primeng/toast';
 import { environment } from 'src/environments/environment';
 import { ModalComponent } from './components/smart/modal/modal.component';
 import { LayoutComponent } from './layout/layout.component';
@@ -10,7 +9,7 @@ import { I18nService } from './service/translate.service';
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: [],
-  imports: [LayoutComponent, ToastModule, ConfirmDialogModule, ModalComponent],
+  imports: [LayoutComponent, ConfirmDialogModule, ModalComponent],
 })
 export class AppComponent implements OnInit, OnDestroy {
   title = 'Agedap Llamatron';

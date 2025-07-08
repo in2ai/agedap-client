@@ -4,12 +4,16 @@ import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { TagModule } from 'primeng/tag';
 import { ButtonComponent } from 'src/app/components/ui/button/button.component';
+import { getGPUTier } from 'detect-gpu';
+import { MessageService } from 'primeng/api';
+import { Toast } from 'primeng/toast';
 
 @Component({
   selector: 'app-config',
   templateUrl: './config.component.html',
   styles: [':host { width: 100%; }'],
-  imports: [TranslateModule, TagModule, CommonModule, ButtonComponent, FormsModule],
+  imports: [TranslateModule, Toast, TagModule, CommonModule, ButtonComponent, FormsModule],
+  providers: [MessageService],
 })
 export class ConfigComponent implements OnInit {
   public electronTest?: boolean;
@@ -27,12 +31,29 @@ export class ConfigComponent implements OnInit {
     "topP": 0.4
 }`;
   public appConfig: any = null;
+  public gpuTier: number = 0;
+  public togetherApiKey: string = '';
+  public minTier: number = 3;
+
+  constructor(private messageService: MessageService) {}
 
   async ngOnInit() {
     try {
       const response = await (window as any).electronAPI.runNodeCode({
         func: 'state',
       });
+
+      const gpuTier = await getGPUTier();
+      this.gpuTier = gpuTier.tier || 0;
+      if (this.gpuTier < this.minTier) {
+        console.warn(`Low GPU Tier: ${this.gpuTier}`);
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Memoria de GPU baja',
+          detail: `Te recomendamos usar un modelo en remoto, tu equipo puede no tener suficiente memoria de GPU para ejecutar modelo en local.`,
+          life: 10000,
+        });
+      }
 
       this.electronTest = true;
       if (response && response.modelPath) {
@@ -81,9 +102,45 @@ export class ConfigComponent implements OnInit {
       this.modelLoaded = true;
     } catch (error) {
       console.log(error);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error al cargar el modelo',
+        detail: 'No se pudo cargar el modelo. Asegúrate de que el modelo existe y es compatible.',
+        life: 5000,
+      });
       this.modelLoaded = false;
     } finally {
       this.isSelectingModel = false;
     }
+  }
+
+  async loadRemoteModel() {
+    try {
+      const response = await (window as any).electronAPI.runNodeCode({
+        func: 'selectModel',
+        config: JSON.stringify({
+          togetherAI: true,
+          togetherApiKey: this.togetherApiKey,
+        }),
+      });
+      this.modelName = response.modelName;
+      this.modelLoaded = true;
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error al cargar el modelo remoto',
+        detail: 'No se pudo cargar el modelo remoto. Asegúrate de que la clave API es correcta.',
+        life: 5000,
+      });
+      this.modelLoaded = false;
+    }
+  }
+
+  resetModel() {
+    this.modelLoaded = false;
+    this.modelName = undefined;
+    this.isSelectingModel = false;
+    this.togetherApiKey = '';
   }
 }

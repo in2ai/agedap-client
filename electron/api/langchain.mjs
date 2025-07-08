@@ -1,9 +1,10 @@
 import { StateGraph, END, START, MessagesAnnotation, MemorySaver } from '@langchain/langgraph';
 import { ChatPromptTemplate } from '@langchain/core/prompts';
 import { ChatLlamaCpp } from '@langchain/community/chat_models/llama_cpp';
+import { ChatTogetherAI } from '@langchain/community/chat_models/togetherai';
 import { dispatchCustomEvent } from '@langchain/core/callbacks/dispatch';
-import { trimMessages } from '@langchain/core/messages';
-
+import { AIMessage, trimMessages } from '@langchain/core/messages';
+//const TOGETHER_AI_API_KEY = '9f78984abf4a8e3c77f87e3633ae8b982be1c37919a8113019e7103037620038';
 let model = null;
 export let configuration = null;
 let trimmer = trimMessages({
@@ -17,7 +18,14 @@ let trimmer = trimMessages({
 
 export const loadModel = async (config) => {
   configuration = config;
-  model = await ChatLlamaCpp.initialize(config);
+  if (configuration.togetherAI) {
+    model = new ChatTogetherAI({
+      model: configuration.modelName,
+      apiKey: configuration.togetherApiKey,
+    });
+  } else {
+    model = await ChatLlamaCpp.initialize(config);
+  }
   trimmer = trimMessages({
     maxTokens: configuration?.maxTokens || 1024,
     strategy: 'last',
@@ -74,8 +82,9 @@ const callModel = async (state) => {
     if (model === null) {
       throw new Error('Model not loaded');
     }
+    console.log('Calling model with state:', state);
 
-    if (model._context.sequencesLeft === 0) {
+    if (!configuration.togetherAI && model._context.sequencesLeft === 0) {
       model._context = await model._model.createContext({
         contextSize: configuration.contextSize || 1024,
         batchSize: configuration.batchSize || 128,
@@ -85,15 +94,31 @@ const callModel = async (state) => {
 
     const trimmedMessage = await trimmer.invoke(state.messages);
     const prompt = await promptTemplate.invoke({ messages: trimmedMessage });
-    const response = await model.invoke(prompt, {
-      onToken: async (token) => {
-        const detokenized = model._model.tokenizer.detokenize(token);
-        await dispatchCustomEvent('onTextChunk', detokenized);
-      },
-    });
 
-    return { messages: [response] };
+    if (!configuration.togetherAI) {
+      const response = await model.invoke(prompt, {
+        onToken: async (token) => {
+          console.log('Token received:', token);
+          const detokenized = model._model.tokenizer.detokenize(token);
+          await dispatchCustomEvent('onTextChunk', detokenized);
+        },
+      });
+      return { messages: [response] };
+    } else {
+      let currentMessage = '';
+      const response = await model.stream(prompt);
+      for await (const chunk of response) {
+        console.log('Chunk received:', chunk);
+        currentMessage += chunk.content;
+        await dispatchCustomEvent('onTextChunk', chunk.content);
+      }
+      console.log('Model response:', response);
+      return {
+        messages: [new AIMessage(currentMessage)],
+      };
+    }
   } catch (error) {
+    console.error('Error in callModel:', error);
     return { messages: [{ type: 'system', text: error.toString() }] };
   }
 };
