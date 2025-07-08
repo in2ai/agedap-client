@@ -44,6 +44,26 @@ export function handleRunNodeCode() {
         });
         break;
       }
+      case 'loadApp': {
+        const dbConfig = await getConfig();
+        if (dbConfig && dbConfig.modelPath && dbConfig.modelPath !== '') {
+          await loadModel(dbConfig);
+          console.log('Configuration loaded from DB:', dbConfig);
+        }
+
+        let state = { modelPath: null, configuration: null };
+        if (configuration) {
+          state = {
+            modelPath: configuration.modelPath,
+            configuration: configuration,
+          };
+        }
+        event.sender.send('onNodeCodeResponse_loadApp', {
+          func: 'loadApp',
+          ...state,
+        });
+        break;
+      }
       case 'state': {
         let state = { modelPath: null, configuration: null };
         if (configuration) {
@@ -179,6 +199,12 @@ export function handleRunNodeCode() {
           configuration.modelName = modelName;
           configuration.modelPath = modelName;
           await loadModel(configuration);
+          await setConfig({
+            togetherAI: configuration.togetherAI,
+            togetherApiKey: configuration.togetherApiKey,
+            modelName: modelName,
+            modelPath: modelName,
+          });
           event.sender.send('onNodeCodeResponse_selectModel', {
             func: 'selectModel',
             modelName,
@@ -199,6 +225,12 @@ export function handleRunNodeCode() {
 
             configuration.modelPath = modelPath;
             await loadModel(configuration);
+            await setConfig({
+              togetherAI: false,
+              togetherApiKey: null,
+              modelName: modelName,
+              ...configuration,
+            });
             event.sender.send('onNodeCodeResponse_selectModel', {
               func: 'selectModel',
               modelName,
@@ -206,6 +238,16 @@ export function handleRunNodeCode() {
             });
           }
         }
+        break;
+      }
+      case 'unloadModel': {
+        await setConfig({
+          modelPath: null,
+        });
+        event.sender.send('onNodeCodeResponse_unloadModel', {
+          func: 'unloadModel',
+          modelPath: null,
+        });
         break;
       }
       case 'selectFile': {

@@ -1,23 +1,35 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
-import { TagModule } from 'primeng/tag';
-import { ButtonComponent } from 'src/app/components/ui/button/button.component';
 import { getGPUTier } from 'detect-gpu';
 import { MessageService } from 'primeng/api';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { TagModule } from 'primeng/tag';
 import { Toast } from 'primeng/toast';
+import { ButtonComponent } from 'src/app/components/ui/button/button.component';
+import { AppService } from 'src/app/service/app.service';
 
 @Component({
   selector: 'app-config',
   templateUrl: './config.component.html',
   styles: [':host { width: 100%; }'],
-  imports: [TranslateModule, Toast, TagModule, CommonModule, ButtonComponent, FormsModule],
+  imports: [
+    TranslateModule,
+    Toast,
+    TagModule,
+    CommonModule,
+    ButtonComponent,
+    FormsModule,
+    ProgressSpinnerModule,
+  ],
   providers: [MessageService],
 })
 export class ConfigComponent implements OnInit {
+  @ViewChild('chatInputField') chatInputField: any;
   public electronTest?: boolean;
   public modelLoaded?: boolean | null;
+  public isRemoteModel: boolean = false;
   public modelName?: string;
   public isSelectingModel?: boolean;
   public config: string = `{
@@ -34,18 +46,75 @@ export class ConfigComponent implements OnInit {
   public gpuTier: number = 0;
   public togetherApiKey: string = '';
   public minTier: number = 3;
+  public loading: boolean = true;
+  public chatInput: string = '';
 
-  constructor(private messageService: MessageService) {}
+  public exampleButtons = [
+    {
+      title: 'Ayúdame a encontrar trabajo',
+      type: 'plugin',
+      value: 'findJob',
+    },
+    {
+      title: 'Obtener consejos',
+      type: 'text',
+      value: 'Dame consejos sobre ',
+    },
+    {
+      title: 'Aprender algo nuevo',
+      type: 'text',
+      value: 'Enseñame sobre ',
+    },
+    {
+      title: 'Crear un plan',
+      type: 'text',
+      value: 'Ayúdame a crear un plan para ',
+    },
+    {
+      title: 'Lluvia de ideas',
+      type: 'text',
+      value: 'Ayúdame a hacer una lluvia de ideas sobre ',
+    },
+    {
+      title: 'Practicar un idioma',
+      type: 'text',
+      value: 'Ayúdame a practicar la conversación en ',
+    },
+  ];
+
+  constructor(
+    private messageService: MessageService,
+    private appService: AppService
+  ) {}
 
   async ngOnInit() {
     try {
+      this.chatInput = '';
+      this.loading = true;
       const response = await (window as any).electronAPI.runNodeCode({
-        func: 'state',
+        func: 'loadApp',
       });
 
       const gpuTier = await getGPUTier();
       this.gpuTier = gpuTier.tier || 0;
-      if (this.gpuTier < this.minTier) {
+
+      this.electronTest = true;
+      if (response && response.modelPath) {
+        this.modelLoaded = true;
+        this.isRemoteModel = response.togetherAI || false;
+        this.modelName = response.modelPath;
+        this.appService.sendData({
+          modelName: this.modelName,
+          modelLoaded: this.modelLoaded,
+        });
+        if (this.modelName) {
+          this.modelName = this.modelName.split('\\').pop() || '';
+          this.modelName = this.modelName.split('/').pop() || '';
+        }
+      }
+
+      console.log('GPU Tier:', this.gpuTier);
+      if (this.gpuTier < this.minTier && !this.modelLoaded) {
         console.warn(`Low GPU Tier: ${this.gpuTier}`);
         this.messageService.add({
           severity: 'warn',
@@ -53,16 +122,6 @@ export class ConfigComponent implements OnInit {
           detail: `Te recomendamos usar un modelo en remoto, tu equipo puede no tener suficiente memoria de GPU para ejecutar modelo en local.`,
           life: 10000,
         });
-      }
-
-      this.electronTest = true;
-      if (response && response.modelPath) {
-        this.modelLoaded = true;
-        this.modelName = response.modelPath;
-        if (this.modelName) {
-          this.modelName = this.modelName.split('\\').pop() || '';
-          this.modelName = this.modelName.split('/').pop() || '';
-        }
       }
 
       this.appConfig = await (window as any).electronAPI.runNodeCode({ func: 'getConfig' });
@@ -76,6 +135,8 @@ export class ConfigComponent implements OnInit {
       console.log(error);
       this.electronTest = false;
       this.modelLoaded = false;
+    } finally {
+      this.loading = false;
     }
   }
 
@@ -100,6 +161,10 @@ export class ConfigComponent implements OnInit {
       });
       this.modelName = response.modelName;
       this.modelLoaded = true;
+      this.appService.sendData({
+        modelName: this.modelName,
+        modelLoaded: this.modelLoaded,
+      });
     } catch (error) {
       console.log(error);
       this.messageService.add({
@@ -109,6 +174,11 @@ export class ConfigComponent implements OnInit {
         life: 5000,
       });
       this.modelLoaded = false;
+      this.isRemoteModel = false;
+      this.appService.sendData({
+        modelName: undefined,
+        modelLoaded: false,
+      });
     } finally {
       this.isSelectingModel = false;
     }
@@ -116,6 +186,14 @@ export class ConfigComponent implements OnInit {
 
   async loadRemoteModel() {
     try {
+      if (!this.togetherApiKey || this.togetherApiKey.trim() === '') {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Clave API requerida',
+          detail: 'Por favor, introduce tu clave API de Together AI.',
+        });
+        return;
+      }
       const response = await (window as any).electronAPI.runNodeCode({
         func: 'selectModel',
         config: JSON.stringify({
@@ -125,6 +203,11 @@ export class ConfigComponent implements OnInit {
       });
       this.modelName = response.modelName;
       this.modelLoaded = true;
+      this.isRemoteModel = true;
+      this.appService.sendData({
+        modelName: this.modelName,
+        modelLoaded: this.modelLoaded,
+      });
     } catch (error) {
       console.log(error);
       this.messageService.add({
@@ -134,13 +217,40 @@ export class ConfigComponent implements OnInit {
         life: 5000,
       });
       this.modelLoaded = false;
+      this.isRemoteModel = false;
+      this.appService.sendData({
+        modelName: undefined,
+        modelLoaded: false,
+      });
     }
   }
 
-  resetModel() {
+  async resetModel() {
+    await (window as any).electronAPI.runNodeCode({
+      func: 'unloadModel',
+    });
     this.modelLoaded = false;
     this.modelName = undefined;
     this.isSelectingModel = false;
     this.togetherApiKey = '';
+    this.chatInput = '';
+    this.appService.sendData({
+      modelName: undefined,
+      modelLoaded: false,
+    });
+  }
+
+  onExampleButtonClick(button: any) {
+    if (button.type === 'plugin') {
+      this.messageService.add({
+        severity: 'info',
+        summary: 'Plugin',
+        detail: `Plugin seleccionado: ${button.value}`,
+      });
+    } else if (button.type === 'text') {
+      this.chatInput = button.value;
+      //focus the input field
+      this.chatInputField.nativeElement.focus();
+    }
   }
 }

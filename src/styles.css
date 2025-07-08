@@ -1,33 +1,31 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-sidebarBg: var(--color-slate-300);
-  --color-sidebarText: var(--color-slate-700);
-  --color-mainContentBg: var(--color-slate-200);
-  --color-mainContentText: var(--color-slate-900);
-
-  /* Border */
-  --color-greyBorder: var(--color-slate-300);
-
-  /* Button */
-  --color-primaryButtonBg: var(--color-slate-400);
+  --color-sidebarBg: #101524;
+  --color-sidebarText: white;
+  --color-mainContentBg: #101523;
+  --color-mainContentText: white;
+  --color-greyBorder: #2c2f33;
+  --color-iconHover: #232734;
+  --color-warning: #f59e0b;
+  --color-primaryButtonBg: #1d2439;
   --color-primaryButtonText: var(--color-white);
+  --color-secondaryText: #a1a1aa;
 
-  --color-primaryButtonBgHover: var(--color-slate-500);
+  --color-primaryButtonBgHover: #252936;
   --color-primaryButtonTextHover: var(--color-white);
 
   --color-primaryButtonDisabledBg: var(--color-slate-300);
   --color-primaryButtonDisabledText: var(--color-white);
 
-  --color-secondaryButtonBg: var(--color-white);
-  --color-secondaryButtonText: var(--color-slate-400);
-
-  --color-secondaryButtonBgHover: var(--color-white);
-  --color-secondaryButtonTextHover: var(--color-slate-500);
-
+  --color-secondaryButtonBg: #323f60;
+  --color-secondaryButtonText: white;
+  --color-secondaryButtonBgHover: #101524;
+  --color-secondaryButtonTextHover: white;
   --color-secondaryButtonDisabledBg: var(--color-white);
   --color-secondaryButtonDisabledText: var(--color-slate-300);
 
+  --color-chatInputBg: #1c2234;
   --spacing-sidebarW: '200px';
 
   /* Chat */
@@ -38,7 +36,7 @@
 }
 
 .p-toast-detail {
-  color: black !important;
+  color: white !important;
 }
 
 a {

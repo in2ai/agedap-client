@@ -13,14 +13,15 @@ let tray;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 1280,
-    height: 720,
+    width: 1580,
+    height: 900,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true,
       contextIsolation: true,
     },
   });
+  mainWindow.setMenuBarVisibility(false);
 
   mainWindow.loadFile(path.join(__dirname, '../dist/agedap-llamatron/browser/index.html'));
 

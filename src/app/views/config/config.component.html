@@ -1,14 +1,25 @@
 <p-toast baseZIndex="9999999" position="top-right"></p-toast>
-<div class="flex w-full h-full justify-center items-center text-slate-500">
-  <div class="w-full max-w-3xl p-5">
-    <h1 class="my-2 font-bold text-xl">Bienvenido a Agedap Llamatron</h1>
+<div class="flex flex-col w-full h-full justify-center items-center text-mainContentText">
+  <div *ngIf="loading">
+    <p-progress-spinner
+      strokeWidth="8"
+      fill="transparent"
+      animationDuration=".5s"
+      [style]="{ width: '50px', height: '50px' }"
+    />
+  </div>
+  <div *ngIf="!loading" class="w-full max-w-6xl p-5 mx-20 flex flex-col justify-center h-full">
+    <div class="flex flex-row items-center gap-4">
+      <img class="w-10 h-10" src="icons/app-icon.svg" alt="Logo" />
+      <h1 class="my-2 font-bold text-4xl">Bienvenido a Llamatron</h1>
+    </div>
     <p *ngIf="!modelLoaded">
-      La primera vez que inicie la aplicación, se le pedirá que seleccione un modelo de lenguaje.
+      Por favor, seleccione un modelo de lenguaje para comenzar a usar la aplicación.
     </p>
-    <div *ngIf="!modelLoaded" class="border border-slate-300 p-5 rounded-md mt-5">
+    <div *ngIf="!modelLoaded" class="border border-greyBorder p-5 rounded-md mt-10">
       <section class="text-justify">
-        <header class="font-bold pb-3 mb-3 border-b border-gray-400 border-dotted">
-          <h1>Modelo remoto</h1>
+        <header class="font-bold pb-3">
+          <h1 class="text-xl">Modelo remoto</h1>
         </header>
         <main class="pb-10">
           <p>
@@ -21,24 +32,34 @@
             pInputText
             type="text"
             placeholder="Together AI API Key"
-            class="border border-slate-300 rounded-md w-full p-2"
+            class="border border-greyBorder rounded-md w-full p-2"
             [(ngModel)]="togetherApiKey"
           />
           <app-button (click)="loadRemoteModel()" label="Cargar" />
         </footer>
       </section>
     </div>
-    <div *ngIf="!modelLoaded" class="border border-slate-300 p-5 rounded-md mt-5">
+    <div *ngIf="!modelLoaded" class="border border-greyBorder p-5 rounded-md mt-5 overflow-auto">
       <section class="text-justify">
-        <header class="font-bold pb-3 mb-3 border-b border-gray-400 border-dotted">
-          <h1>Modelo local</h1>
+        <header class="font-bold pb-3">
+          <h1 class="text-xl">Modelo local</h1>
         </header>
-        <main class="pb-10">
+        <main>
           <p>Seleccione un modelo de lenguaje local para comenzar a usar la aplicación.</p>
-          <p *ngIf="gpuTier < minTier" class="text-yellow-500 my-2">
-            <strong>Advertencia:</strong> Su equipo tiene una memoria de GPU baja. Se recomienda
-            utilizar un modelo en remoto para evitar problemas de rendimiento.
+          <p *ngIf="gpuTier < minTier" class="text-warning my-2 font-bold">
+            Advertencia: Su equipo tiene una memoria de GPU baja. Se recomienda utilizar un modelo
+            en remoto para evitar problemas de rendimiento.
           </p>
+          <details class="mt-5 mb-5">
+            <summary class="text-slate-500 text-sm font-bold cursor-pointer">
+              DEVELOPER CONFIGURATION
+            </summary>
+            <textarea
+              class="w-full h-40 border border-greyBorder p-5 rounded-md mt-2"
+              [(ngModel)]="config"
+            >
+            </textarea>
+          </details>
         </main>
         <footer class="flex justify-end">
           <app-button
@@ -51,34 +72,57 @@
             "
           />
         </footer>
-        <details class="mt-5 mb-5">
-          <summary class="text-slate-500 text-sm font-bold">DEVELOPER CONFIGURATION</summary>
-          <textarea class="w-full h-96 border border-slate-300 p-5 rounded-md" [(ngModel)]="config">
-          </textarea>
-        </details>
       </section>
     </div>
-    <div *ngIf="modelLoaded" class="border border-slate-300 p-5 rounded-md mt-5">
-      <section class="text-justify">
-        <header class="font-bold pb-3 mb-3 border-b border-gray-200">
-          <h1>Modelo seleccionado</h1>
-        </header>
-        <main class="pb-10">
-          <p>
-            {{ modelName }}
-          </p>
-        </main>
-        <footer class="flex justify-end">
-          <app-button (click)="resetModel()" label="Cargar otro modelo" />
-        </footer>
-      </section>
+    <div *ngIf="modelLoaded" class="my-5 flex flex-col gap-2">
+      <h3 class="font-bold">Modelo seleccionado</h3>
+      <div class="flex flex-row items-center gap-2">
+        <p class="text-secondaryText">{{ modelName }} ({{ isRemoteModel ? 'Remoto' : 'Local' }})</p>
+        <button
+          [title]="'Cambiar modelo'"
+          class="cursor-pointer p-1 px-2 rounded-md text-secondaryText hover:bg-iconHover hover:text-red-300"
+          (click)="resetModel()"
+        >
+          <i class="pi pi-trash"></i>
+        </button>
+      </div>
+
+      <div class="flex flex-wrap gap-4 items-center justify-center my-10">
+        <button
+          *ngFor="let exampleButton of exampleButtons"
+          class="p-2 px-4 rounded-2xl bg-secondaryButtonBg text-secondaryButtonText hover:bg-secondaryButtonBgHover cursor-pointer border border-secondaryButtonBg"
+          (click)="onExampleButtonClick(exampleButton)"
+        >
+          <i *ngIf="exampleButton.type === 'plugin'" class="pi pi-bolt"></i>
+          {{ exampleButton.title }}
+        </button>
+      </div>
     </div>
-    <label
+
+    <!--<label
       *ngIf="appConfig && appConfig.publicKey"
       class="block text-slate-500 text-sm font-bold my-4"
     >
       PK: {{ appConfig.publicKey }}
-    </label>
+    </label>-->
+  </div>
+  <!-- INPUT CHAT (bottom of page) -->
+  <div *ngIf="!loading && modelLoaded" class="w-full max-w-6xl p-5 mx-20 flex flex-col gap-2">
+    <div class="flex flex-row gap-2 items-center rounded-4xl bg-chatInputBg p-4 shadow-2xl w-full">
+      <input
+        #chatInputField
+        type="text"
+        placeholder="Pregunta lo que quieras..."
+        [(ngModel)]="chatInput"
+        class="w-full border-0 outline-none bg-transparent text-mainContentText"
+      />
+      <button
+        title="Enviar mensaje"
+        class="text-primaryButtonText cursor-pointer px-2 hover:text-primaryButtonTextHover hover:scale-110 transition-transform duration-200"
+      >
+        <i class="pi pi-arrow-up"></i>
+      </button>
+    </div>
   </div>
 
   <!-- <app-button
