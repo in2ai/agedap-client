@@ -1,4 +1,4 @@
-import { addChatMessage, updateWorkspace } from '../../db.mjs';
+import { addChatMessage } from '../../db.mjs';
 import { getUserFromLinkedinZip } from '../../linkedin.mjs';
 import { getWorkOffers } from '../../relay.mjs';
 import { RELAY_LIST } from '../../relays.mjs';
@@ -102,7 +102,7 @@ async function checkWorkOffers(printLookingForWork) {
 
   const workOffers = await getWorkOffers(relay.url, workspace.lastTimestamp, null);
   let matchedOffersCount = 0;
-  chatController.workspace = await updateWorkspace(workspace.id);
+  //chatController.workspace = await updateWorkspace(workspace.id);
 
   for (const workOffer of workOffers) {
     try {

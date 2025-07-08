@@ -101,7 +101,7 @@ export class ConfigComponent implements OnInit {
       this.electronTest = true;
       if (response && response.modelPath) {
         this.modelLoaded = true;
-        this.isRemoteModel = response.togetherAI || false;
+        this.isRemoteModel = response.configuration.togetherAI || false;
         this.modelName = response.modelPath;
         this.appService.sendData({
           modelName: this.modelName,

@@ -100,106 +100,28 @@ export async function deleteConfigValue(key) {
   return key;
 }
 
-//Workspaces DB
-const workspacesDb = await JSONFilePreset(path.join(dbPath, 'workspaces.json'), []);
-const chatsDb = await JSONFilePreset(path.join(dbPath, 'chats.json'), []);
-
-// Workspaces
-export async function newWorkspace(type, name, description, documents, relayId) {
-  const id = uuidv4();
-  const date = new Date();
-  const workspace = {
-    id,
-    type,
-    name,
-    description,
-    relayId,
-    documents,
-    chatIds: [],
-    lastTimestamp: 0,
-    createdAt: date,
-    updatedAt: date,
-  };
-  await workspacesDb.read();
-  await workspacesDb.update((data) => data.push(workspace));
-  return workspace;
-}
-
-export async function getAllWorkspaces() {
-  await workspacesDb.read();
-  return workspacesDb.data;
-}
-
-export async function getWorkspaces(page, limit) {
-  page -= 1;
-  if (page < 0) page = 0;
-  await workspacesDb.read();
-  return workspacesDb.data.slice(page * limit, (page + 1) * limit);
-}
-
-export async function getWorkspace(workspaceId) {
-  await workspacesDb.read();
-  return workspacesDb.data.find((w) => w.id === workspaceId);
-}
-
-export async function deleteWorkspace(workspaceId) {
-  const workspace = await getWorkspace(workspaceId);
-  if (!workspace) throw new Error('Workspace no encontrado');
-
-  // Delete chats
-  await chatsDb.read();
-  chatsDb.data = chatsDb.data.filter((c) => c.workspaceId !== workspaceId);
-  await chatsDb.write();
-
-  await workspacesDb.read();
-  workspacesDb.data = workspacesDb.data.filter((w) => w.id !== workspaceId);
-  await workspacesDb.write();
-  return workspace.id;
-}
-
-export async function editWorkspace(workspaceId, name, description, documents, relayId) {
-  const workspace = await getWorkspace(workspaceId);
-  if (!workspace) throw new Error('Workspace no encontrado');
-
-  workspace.name = name;
-  workspace.description = description;
-  workspace.documents = documents;
-  workspace.relayId = relayId;
-  workspace.updatedAt = new Date();
-
-  await workspacesDb.read();
-  await workspacesDb.update((data) => {
-    const workspaceIndex = data.findIndex((w) => w.id === workspaceId);
-    data[workspaceIndex] = workspace;
-  });
-  return workspace;
-}
-
-export async function updateWorkspace(workspaceId) {
-  const workspace = await getWorkspace(workspaceId);
-  if (!workspace) throw new Error('Workspace no encontrado');
-
-  const date = new Date();
-  workspace.lastTimestamp = date;
-  workspace.updatedAt = date;
-
-  await workspacesDb.read();
-  await workspacesDb.update((data) => {
-    const workspaceIndex = data.findIndex((w) => w.id === workspaceId);
-    data[workspaceIndex] = workspace;
-  });
-  return workspace;
-}
-
 // Chats
-export async function newChat(workspaceId, name, description) {
+const chatsDb = await JSONFilePreset(path.join(dbPath, 'chats.json'), []);
+export async function newChat(
+  name,
+  description,
+  type = null,
+  agentName = null,
+  documents = null,
+  authors = null,
+  relay = null
+) {
   const id = uuidv4();
   const date = new Date();
   const chat = {
     id,
-    workspaceId,
     name,
     description,
+    type,
+    agentName,
+    documents,
+    authors,
+    relay,
     messages: [],
     createdAt: date,
     updatedAt: date,
@@ -207,18 +129,12 @@ export async function newChat(workspaceId, name, description) {
   // Update chat
   await chatsDb.read();
   await chatsDb.update((data) => data.push(chat));
-  // Update workspace
-  await workspacesDb.read();
-  await workspacesDb.update((data) => {
-    const workspaceIndex = data.findIndex((w) => w.id === workspaceId);
-    data[workspaceIndex].chatIds.push(id);
-  });
   return chat;
 }
 
-export async function getChats(workspaceId) {
+export async function getChats() {
   await chatsDb.read();
-  const chats = chatsDb.data.filter((c) => c.workspaceId === workspaceId);
+  const chats = chatsDb.data;
   chats.forEach((c) => delete c.messages);
   return chats;
 }
@@ -238,14 +154,6 @@ export async function getChatMessages(chatId) {
 export async function deleteChat(chatId) {
   const chat = await getChat(chatId);
   if (!chat) throw new Error('Chat no encontrado');
-
-  // Update workspace
-  await workspacesDb.read();
-  workspacesDb.data = workspacesDb.data.map((w) => {
-    w.chatIds = w.chatIds.filter((cId) => cId !== chatId);
-    return w;
-  });
-  await workspacesDb.write();
 
   // Delete chat
   await chatsDb.read();

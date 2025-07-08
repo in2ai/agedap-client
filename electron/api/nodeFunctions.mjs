@@ -7,7 +7,6 @@ import {
   deleteChat,
   deleteConfigValue,
   deleteOnlineChat,
-  deleteWorkspace,
   getChat,
   getChatMessages,
   getChats,
@@ -15,11 +14,8 @@ import {
   getConfigValue,
   getOnlineChat,
   getOnlineChats,
-  getWorkspace,
-  getWorkspaces,
   newChat,
   newOnlineChat,
-  newWorkspace,
   onlineChatExists,
   setConfig,
   setConfigValue,
@@ -274,48 +270,10 @@ export function handleRunNodeCode() {
         break;
       }
 
-      //Workspaces
-      case 'newWorkspace': {
-        const { type, name, description, documents, relayId } = data;
-        const workspace = await newWorkspace(type, name, description, documents, relayId);
-        event.sender.send('onNodeCodeResponse_newWorkspace', {
-          func: 'newWorkspace',
-          workspace,
-        });
-        break;
-      }
-      case 'getWorkspaces': {
-        const { page, limit } = data;
-        const workspaces = await getWorkspaces(page, limit);
-        event.sender.send('onNodeCodeResponse_getWorkspaces', {
-          func: 'getWorkspaces',
-          workspaces,
-        });
-        break;
-      }
-      case 'getWorkspace': {
-        const { workspaceId } = data;
-        const workspace = await getWorkspace(workspaceId);
-        event.sender.send('onNodeCodeResponse_getWorkspace', {
-          func: 'getWorkspace',
-          workspace,
-        });
-        break;
-      }
-      case 'deleteWorkspace': {
-        const { workspaceId } = data;
-        await deleteWorkspace(workspaceId);
-        event.sender.send('onNodeCodeResponse_deleteWorkspace', {
-          func: 'deleteWorkspace',
-          workspaceId,
-        });
-        break;
-      }
-
       //Chats
       case 'newChat': {
-        const { workspaceId, name, description } = data;
-        const chat = await newChat(workspaceId, name, description);
+        const { name, description, type, documents } = data;
+        const chat = await newChat(name, description, type, documents);
         event.sender.send('onNodeCodeResponse_newChat', {
           func: 'newChat',
           chat,
@@ -323,8 +281,7 @@ export function handleRunNodeCode() {
         break;
       }
       case 'getChats': {
-        const { workspaceId } = data;
-        const chats = await getChats(workspaceId);
+        const chats = await getChats();
         event.sender.send('onNodeCodeResponse_getChats', {
           func: 'getChats',
           chats,
@@ -351,7 +308,7 @@ export function handleRunNodeCode() {
       }
 
       //Chat IA
-      case 'loadChat': {
+      /*case 'loadChat': {
         const { chatId } = data;
         const chat = await getChat(chatId);
         const workspace = await getWorkspace(chat.workspaceId);
@@ -378,7 +335,7 @@ export function handleRunNodeCode() {
 
         startChatService(event, chat);
         break;
-      }
+      }*/
 
       case 'unloadChat': {
         const { chatId } = data;

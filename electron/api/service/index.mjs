@@ -1,4 +1,3 @@
-import { getWorkspace } from '../db.mjs';
 import { workOffersService } from './workOffers/service.mjs';
 
 let chatController = {
@@ -11,8 +10,8 @@ let chatController = {
 
 export async function startChatService(event, chat) {
   if (chatController.started) return;
-
-  const workspace = await getWorkspace(chat.workspaceId);
+  return;
+  /*const workspace = await getWorkspace(chat.workspaceId);
   if (!workspace) return;
 
   chatController = {
@@ -29,7 +28,7 @@ export async function startChatService(event, chat) {
       chatController.interval = timer;
       break;
     }
-  }
+  }*/
 }
 
 export async function stopChatService() {

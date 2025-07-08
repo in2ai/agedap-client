@@ -6,7 +6,7 @@
   <div class="flex flex-row items-center justify-between gap-1 min-w-32 w-fit">
     <div class="flex items-center gap-2 text-white mr-10">
       <img class="w-6 h-6" src="icons/app-icon.svg" alt="Logo" />
-      <h3 class="font-bold">Llamatron</h3>
+      <h3 class="font-bold text-xl">Llamatron</h3>
     </div>
     <button
       [title]="sidebarCollapsed ? 'Abrir barra lateral' : 'Cerrar barra lateral'"
@@ -25,24 +25,37 @@
       <i class="pi pi-pen-to-square"></i>
     </button>
   </div>
+  <h3 *ngIf="!sidebarCollapsed" class="font-bold mt-4 mb-2">Conversaciones</h3>
   <!-- Menu -->
-  <div *ngIf="!sidebarCollapsed" class="flex-1 flex justify-items-center items-center">
-    <ul class="list-none m-0">
-      <li *ngFor="let mainRoute of mainRoutes" class="mb-3">
-        <ul class="list-none p-0 m-0 overflow-hidden">
-          <li *ngFor="let route of mainRoute.routes" class="mb-2">
-            <app-nav-link
-              [isCollapsed]="sidebarCollapsed"
-              [isActive]="isRouteActive(route)"
-              [label]="route.title | translate"
-              [primeIcon]="route.icon"
-              [routerLink]="route.path"
-              [queryParams]="route.params"
-            />
-          </li>
-        </ul>
+  <div
+    *ngIf="!sidebarCollapsed && chats.length > 0"
+    class="flex-1 flex justify-items-center items-start my-2 pr-2 overflow-y-auto overflow-x-hidden"
+  >
+    <ul class="list-none m-0 flex flex-col gap-2 p-0 w-full">
+      <li
+        *ngFor="let chat of chats"
+        class="text-mainContentText text-md flex flex-row cursor-pointer rounded-md p-2 hover:bg-primaryButtonBgHover transition-colors duration-200 group"
+      >
+        <div class="flex flex-col w-full group-hover:w-[80%]">
+          <span class="truncate text-sm">{{ chat.name }}</span>
+          <span class="text-secondaryText text-xs">{{
+            chat.createdAt | date: 'dd/MM/yyyy HH:mm'
+          }}</span>
+        </div>
+        <button
+          class="ml-auto p-1 px-3 rounded-md z-10 cursor-pointer invisible group-hover:visible hover:bg-secondaryText hover:text-secondaryButtonTextHover"
+          [title]="'Eliminar conversación'"
+        >
+          <i class="pi pi-trash"></i>
+        </button>
       </li>
     </ul>
+  </div>
+  <div
+    *ngIf="!sidebarCollapsed && chats.length === 0"
+    class="flex-1 flex justify-items-center items-center"
+  >
+    <span class="text-secondaryText text-center">El historial de conversaciones está vacío.</span>
   </div>
   <div *ngIf="sidebarCollapsed" class="flex-1 flex justify-items-center items-center"></div>
   <!-- Configuration button -->

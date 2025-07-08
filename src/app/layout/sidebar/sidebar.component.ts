@@ -27,13 +27,23 @@ export class SidebarComponent implements OnInit, OnDestroy {
   public appName: string = environment.appName;
   public modelLoaded: boolean = false;
   private appDataSubscription: any;
+  public chats: any[] = [];
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.appDataSubscription = this.appService.watchData().subscribe((data) => {
       if (typeof data.modelLoaded === 'boolean') {
         this.modelLoaded = data.modelLoaded;
       }
     });
+
+    const response = await (window as any).electronAPI.runNodeCode({
+      func: 'getChats',
+    });
+
+    if (response && response.chats) {
+      this.chats = response.chats;
+    }
+    console.log('Chats loaded:', this.chats);
   }
 
   ngOnDestroy(): void {
