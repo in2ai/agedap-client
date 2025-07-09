@@ -22,6 +22,8 @@ let chatController = {
   pk: null,
 };
 let mainEvent = null;
+let mainWindow = null;
+let notification = null;
 
 const subscribeToOnlineChat = (chat) => {
   return new Promise(async (resolve, reject) => {
@@ -212,9 +214,10 @@ async function insertRecordIfNotExists() {
   }
 }
 
-export async function startBackgroundChatUpdate(event, onUpdated = null) {
+export async function startBackgroundChatUpdate(event, theMainWindow, onUpdated = null) {
   console.log('Starting background chat update...');
   mainEvent = event;
+  mainWindow = theMainWindow;
   setInterval(backgroundChatUpdate, 10000, onUpdated);
 }
 
@@ -249,18 +252,23 @@ async function sendDesktopNotification(chat, totalMessages, lastMessage) {
   }
 
   if (totalMessages > 0) {
-    const notification = new Notification({
+    notification = new Notification({
       title: NOTIFICATION_TITLE,
       body: NOTIFICATION_BODY,
     });
-    notification.show();
-    notification.on('click', () => {
-      console.log('Notification clicked');
+    notification.on('click', (event, args) => {
+      console.log('Notification clicked !!!!');
+      console.log('Notification clicked:', mainWindow.focus);
+      if (mainWindow) {
+        if (mainWindow.isMinimized()) mainWindow.restore();
+        mainWindow.focus();
+      }
       mainEvent.sender.send('onNotificationClicked', {
         func: 'onNotificationClicked',
         type: 'chat',
         chatId: chat.id,
       });
     });
+    notification.show();
   }
 }

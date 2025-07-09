@@ -31,7 +31,7 @@ import {
 import { generateSecretKey, getPublicKey } from 'nostr-tools';
 const controllers = new Map();
 
-export function handleRunNodeCode() {
+export function handleRunNodeCode(mainWindow) {
   ipcMain.on('runNodeCode', async (event, data) => {
     const { func } = data;
 
@@ -47,6 +47,7 @@ export function handleRunNodeCode() {
         break;
       }
       case 'loadApp': {
+        console.log('Main window: ', mainWindow.focus);
         console.log('Loading app...', configuration);
         if (!configuration) {
           const dbConfig = await getConfig();
@@ -54,7 +55,7 @@ export function handleRunNodeCode() {
             await loadModel(dbConfig);
             console.log('Configuration loaded from DB:', dbConfig);
           }
-          startBackgroundChatUpdate(event, () => {
+          startBackgroundChatUpdate(event, mainWindow, () => {
             console.log('Background chat updated!!!!!!!');
             event.sender.send('onBackgroundChatUpdated', {
               func: 'onBackgroundChatUpdated',

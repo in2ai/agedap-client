@@ -25,7 +25,7 @@ function createWindow() {
 
   mainWindow.loadFile(path.join(__dirname, '../dist/agedap-llamatron/browser/index.html'));
 
-  mainWindow.webContents.openDevTools();
+  //mainWindow.webContents.openDevTools();
 
   tray = new Tray('public/icon.png');
   const contextMenu = Menu.buildFromTemplate([
@@ -49,14 +49,14 @@ function createWindow() {
     event.preventDefault(); // Evita el cierre de la app
     mainWindow.hide(); // Oculta la ventana en lugar de cerrarla
   });
+
+  handleRunNodeCode(mainWindow); // Llama a las funciones del backend
 }
 
 if (process.platform === 'win32') {
-  app.setAppUserModelId(app.name);
+  app.setAppUserModelId('Llamatron');
 }
 app.whenReady().then(createWindow);
 app.on('window-all-closed', (event) => {
   event.preventDefault(); // Evita que la app se cierre completamente
 });
-
-handleRunNodeCode(); // Llama a las funciones del backend
