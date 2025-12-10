@@ -175,7 +175,7 @@ export function handleRunNodeCode() {
 
         if (configuration && configuration.togetherAI) {
           console.log('Using Together AI model');
-          let modelName = 'meta-llama/Llama-3.3-70B-Instruct-Turbo-Free';
+          let modelName = 'mistralai/Mistral-Small-24B-Instruct-2501';
           configuration.modelName = modelName;
           configuration.modelPath = modelName;
           await loadModel(configuration);

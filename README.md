@@ -1,9 +1,9 @@
 # Agedap-Llamatron
 
-DEMO ONLY
+Aplicación para la búsqueda de empleo al ofrecer a los usuarios la capacidad de conectar sus perfiles de LinkedIn o Europass, o ingresar manualmente sus datos como un currículum vitae. Todo esto de forma local y nativa en dispositivos móviles y escritorio y conectándose mediante el protocolo Nostr para buscar, filtrar y ver ofertas que las empresas publican en los Relays.
 
 ```
-npm install
+npm install --force
 npm run electron (probar)
 npm run make (crear ejecutable)
 ```
@@ -22,3 +22,5 @@ Pasos:
 
 4. Conversar
    ![image](https://github.com/user-attachments/assets/d95eda00-f29a-41c5-a5a9-dfeab8eedb0d)
+
+Este proyecto ha sido subvencionado por la Axencia Galega de Innovación (GAIN) con fondos FEDER de la Unión Europea, con el apoyo de la Consellería de Economía e Industria de la Xunta de Galicia, en el marco de su compromiso con el impulso a la investigación, el desarrollo tecnológico y la innovación.
